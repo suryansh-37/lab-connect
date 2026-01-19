@@ -7,12 +7,14 @@ const cors = require('cors');
 const Session = require('./models/Session');
 
 const app = express();
+
+// 1. Allow Express to accept requests from anywhere
 app.use(cors());
 app.use(express.json());
 
 const server = http.createServer(app);
 
-// ✅ Updated CORS to allow your deployed frontend to connect
+// 2. Allow Socket.io to accept connections from anywhere
 const io = new Server(server, {
   cors: {
     origin: "*", 
@@ -20,62 +22,65 @@ const io = new Server(server, {
   }
 });
 
-// --- MongoDB Connection ---
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/labconnect')
   .then(() => console.log('✅ MongoDB Connected'))
   .catch(err => console.error('❌ MongoDB Error:', err));
 
 // --- API Routes ---
 
-// 1. Root route to check if server is awake
+// Root Check
 app.get('/', (req, res) => {
     res.send("LabConnect Server is Running");
 });
 
-// 2. Create a Session
+// Create Session
 app.post('/api/create-session', async (req, res) => {
-  // Use 6 digits to match your App.tsx logic
-  const sessionId = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const sessionId = req.body.sessionId || Math.random().toString(36).substring(2, 8).toUpperCase();
   try {
-    const newSession = new Session({ sessionId });
-    await newSession.save();
+    // Check if exists first to avoid duplicates
+    const existing = await Session.findOne({ sessionId });
+    if (!existing) {
+        const newSession = new Session({ sessionId });
+        await newSession.save();
+    }
     res.json({ sessionId });
   } catch (error) {
+    console.error("Create Session Error:", error);
     res.status(500).json({ error: 'Failed to create session' });
   }
 });
 
-// 3. Verify Session (Join)
+// Verify Session
 app.get('/api/verify-session/:id', async (req, res) => {
   try {
     const session = await Session.findOne({ sessionId: req.params.id.toUpperCase() });
-    if (session) {
-      res.json({ valid: true });
-    } else {
-      res.json({ valid: false });
-    }
+    res.json({ valid: !!session });
   } catch (error) {
+    console.error("Verify Error:", error);
     res.status(500).json({ error: 'Verification failed' });
   }
 });
 
-// --- Socket.io Real-Time Logic ---
+// --- Chat Logic ---
 io.on('connection', (socket) => {
-  console.log(`✅ User Connected: ${socket.id}`);
+  console.log(`User Connected: ${socket.id}`);
 
   socket.on('join_room', (data) => {
     socket.join(data.room);
     console.log(`User ${data.user} joined room: ${data.room}`);
-    socket.to(data.room).emit('user_joined', { name: data.user });
+    // Notify others in room
+    socket.to(data.room).emit('receive_message', {
+        id: Date.now().toString(),
+        senderName: "System",
+        text: `${data.user} has joined the lab.`,
+        timestamp: new Date().toLocaleTimeString(),
+        senderId: "system"
+    });
   });
 
   socket.on('send_message', (data) => {
-    // Broadcast message to everyone in the room except the sender
     socket.to(data.room).emit('receive_message', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User Disconnected', socket.id);
   });
 });
 
