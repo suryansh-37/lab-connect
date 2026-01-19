@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import type { User, Message, UserRole } from './types';
 import Lenis from 'lenis';
 import { motion, AnimatePresence } from 'framer-motion';
+import io, { Socket } from 'socket.io-client';
+import axios from 'axios';
 import { 
   Moon, Sun, Send, Copy, LogOut, 
   FlaskConical, ArrowRight, Plus, Monitor, 
@@ -18,6 +20,9 @@ import { TeacherDashboard } from './components/TeacherDashboard';
 
 import './App.css';
 
+// --- CONFIGURATION ---
+const BACKEND_URL = "https://lab-connect.onrender.com"; 
+
 // --- UTILS ---
 const generateId = (length = 6) => {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -33,6 +38,9 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [appMode, setAppMode] = useState<'LANDING' | 'QUICK_SESSION' | 'CLASSROOM_AUTH' | 'CLASSROOM_DASH'>('LANDING');
 
+  // --- REAL-TIME STATE ---
+  const socketRef = useRef<Socket | null>(null);
+  
   // --- QUICK SESSION STATE ---
   const [chatStep, setChatStep] = useState<'JOIN' | 'CHAT'>('JOIN');
   const [joinMode, setJoinMode] = useState<'CREATE' | 'JOIN'>('CREATE');
@@ -49,42 +57,42 @@ export default function App() {
   const [role, setRole] = useState<UserRole>('STUDENT');
 
   // --- EFFECTS ---
+
+  // 1. Socket Listener Setup
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(BACKEND_URL, { autoConnect: false });
+    }
+
+    const socket = socketRef.current;
+
+    socket.on("receive_message", (data: Message) => {
+      setMessages((prev) => [...prev, data]);
+    });
+
+    socket.on("user_joined", (data: { name: string }) => {
+      // Logic to add participant to list if desired
+      console.log(`${data.name} joined the lab`);
+    });
+
+    return () => {
+      socket.off("receive_message");
+      socket.off("user_joined");
+      socket.disconnect();
+    };
+  }, []);
   
-  // 1. Dark Mode Toggle
+  // 2. Dark Mode Toggle
   useEffect(() => { document.body.className = darkMode ? 'dark-theme' : 'light-theme'; }, [darkMode]);
   
-  // 2. Smooth Scroll (Landing Page Only)
+  // 3. Smooth Scroll (Landing Page Only)
   useEffect(() => {
-    // Only run Lenis on the Landing page to prevent conflicts with Dashboard scrolling
     if (appMode === 'LANDING') {
       const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
       function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
       return () => lenis.destroy();
     }
-  }, [appMode]);
-
-  // 3. Back Button Safety Intercept
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      if (appMode === 'QUICK_SESSION' && chatStep === 'CHAT') {
-        // If in chat, prevent back and show confirm modal
-        event.preventDefault();
-        history.pushState(null, '', '#chat'); 
-        setShowLeaveConfirm(true);
-      } else if (appMode !== 'LANDING') {
-        // Otherwise just go back to landing
-        setAppMode('LANDING');
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [appMode, chatStep]);
-
-  // 4. URL History Management
-  useEffect(() => {
-    if (appMode === 'LANDING') history.replaceState(null, '', ' ');
-    else history.pushState(null, '', `#${appMode.toLowerCase()}`);
   }, [appMode]);
 
   // --- HANDLERS: CLASSROOM LOGIN ---
@@ -102,16 +110,6 @@ export default function App() {
     if (element.value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData("text").toUpperCase().slice(0, 6);
-    if (!pasteData) return;
-    const newOtp = [...otp];
-    pasteData.split("").forEach((char, i) => { if (i < 6) newOtp[i] = char; });
-    setOtp(newOtp);
-    inputRefs.current[Math.min(pasteData.length, 5)]?.focus();
-  };
-
   const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace") {
       if (!otp[index] && index > 0) inputRefs.current[index - 1]?.focus();
@@ -119,26 +117,59 @@ export default function App() {
     }
   };
 
-  const enterChatSession = () => {
+  const enterChatSession = async () => {
     const finalSessionId = otp.join("");
     if (!currentUser.name) return alert("Please enter your name.");
     if (finalSessionId.length !== 6) return alert("Invalid Session ID.");
-    const userWithId = { ...currentUser, id: generateId() };
-    setCurrentUser(userWithId);
-    setParticipants([userWithId, { id: 'bot', name: 'Lab Assistant', avatar: 'bot' }]); 
-    setChatStep('CHAT');
+
+    try {
+      if (joinMode === 'JOIN') {
+        // Verify session exists in MongoDB via Backend API
+        const res = await axios.get(`${BACKEND_URL}/api/verify-session/${finalSessionId}`);
+        if (!res.data.valid) return alert("Session not found!");
+      } else {
+        // Create session in MongoDB via Backend API
+        await axios.post(`${BACKEND_URL}/api/create-session`, { sessionId: finalSessionId });
+      }
+
+      const userWithId = { ...currentUser, id: generateId() };
+      setCurrentUser(userWithId);
+      setParticipants([userWithId, { id: 'bot', name: 'Lab Assistant', avatar: 'bot' }]); 
+      
+      // Establish Socket Connection
+      socketRef.current?.connect();
+      socketRef.current?.emit("join_room", { room: finalSessionId, user: userWithId.name });
+      
+      setChatStep('CHAT');
+    } catch (err) {
+      alert("Server Connection Error. Is the backend running?");
+    }
   };
 
   const sendMessage = () => {
-    if (!inputText.trim()) return;
-    setMessages([...messages, {
-      id: generateId(), senderId: currentUser.id, senderName: currentUser.name, text: inputText,
+    if (!inputText.trim() || !socketRef.current) return;
+    
+    const messageData: Message = {
+      id: generateId(),
+      senderId: currentUser.id,
+      senderName: currentUser.name,
+      text: inputText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }]);
+    };
+
+    // Emit to others
+    socketRef.current.emit("send_message", { 
+      room: otp.join(""), 
+      ...messageData 
+    });
+
+    // Add to local UI
+    setMessages([...messages, messageData]);
     setInputText('');
   };
 
   const confirmLeave = () => {
+    socketRef.current?.disconnect();
     setShowLeaveConfirm(false);
     setAppMode('LANDING');
     setChatStep('JOIN');
@@ -176,7 +207,7 @@ export default function App() {
         </div>
       </nav>
 
-      {/* MODAL: LEAVE CONFIRMATION (For Chat) */}
+      {/* MODAL: LEAVE CONFIRMATION */}
       <AnimatePresence>
         {showLeaveConfirm && (
           <div className="modal-overlay">
@@ -203,14 +234,12 @@ export default function App() {
           <p className="hero-sub">Choose how you want to connect today.</p>
           
           <div className="mode-cards-container">
-            {/* CARD A: QUICK CHAT */}
             <div className="mode-card" onClick={() => { setAppMode('QUICK_SESSION'); setChatStep('JOIN'); setJoinMode('CREATE'); setOtp(generateId().split("")); }}>
               <div className="mode-icon"><Zap size={32}/></div>
               <h3>Quick Lab</h3>
               <p>Instant, temporary chat session. No login required.</p>
               <span className="mode-link">Start Session &rarr;</span>
             </div>
-            {/* CARD B: CLASSROOM */}
             <div className="mode-card highlight" onClick={() => setAppMode('CLASSROOM_AUTH')}>
               <div className="mode-icon"><BookOpen size={32}/></div>
               <h3>Classroom</h3>
@@ -230,7 +259,6 @@ export default function App() {
                <button className="back-text-btn" onClick={() => setAppMode('LANDING')}>&larr; Back to Home</button>
                <h2>{joinMode === 'CREATE' ? 'Setup Session' : 'Join Session'}</h2>
                
-               {/* OTP INPUTS */}
                <div className="input-group">
                  <label>Session ID (6-Digits)</label>
                  <div className="otp-container">
@@ -244,7 +272,6 @@ export default function App() {
                        ref={(el) => { inputRefs.current[i] = el }}
                        onChange={e => handleOtpChange(e.target, i)}
                        onKeyDown={e => handleOtpKeyDown(e, i)}
-                       onPaste={handleOtpPaste}
                        whileFocus={{ scale: 1.1, borderColor: "var(--primary)" }}
                      />
                    ))}
@@ -267,7 +294,6 @@ export default function App() {
 
           {chatStep === 'CHAT' && (
              <main className="chat-layout">
-                {/* NAV RAIL */}
                 <nav className="nav-rail">
                   <div className="rail-top">
                     <button className={`rail-btn ${activeTab === 'PARTICIPANTS' ? 'active' : ''}`} onClick={() => setActiveTab('PARTICIPANTS')}><Users size={24} /></button>
@@ -276,7 +302,6 @@ export default function App() {
                   <div className="rail-bottom"><button className="rail-btn danger" onClick={() => setShowLeaveConfirm(true)}><LogOut size={24} /></button></div>
                 </nav>
 
-                {/* SIDEBAR */}
                 <aside className="sidebar">
                   <AnimatePresence mode="wait">
                     {activeTab === 'PARTICIPANTS' && (
@@ -285,19 +310,9 @@ export default function App() {
                         <div className="participants-list"><div className="list-header"><Users size={14}/> Active ({participants.length})</div>{participants.map(u => (<div key={u.id} className="participant"><div className="p-avatar-box">{renderAvatar(u.avatar)}</div><span>{u.name}</span></div>))}</div>
                       </motion.div>
                     )}
-                    {activeTab === 'SETTINGS' && (
-                      <motion.div key="set" initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-10}} className="sidebar-content">
-                        <div className="session-info"><h3>Settings</h3></div>
-                        <div className="settings-list">
-                          <div className="setting-item"><label>Theme</label><button className="setting-toggle" onClick={() => setDarkMode(!darkMode)}>{darkMode?'Light Mode':'Dark Mode'}</button></div>
-                          <div className="setting-item"><label>Export</label><button className="setting-toggle"><FileText size={14}/> Download Chat</button></div>
-                        </div>
-                      </motion.div>
-                    )}
                   </AnimatePresence>
                 </aside>
 
-                {/* CHAT AREA */}
                 <section className="chat-area">
                   <div className="messages-feed">
                     <AnimatePresence>
@@ -328,7 +343,6 @@ export default function App() {
               <button className={role === 'TEACHER' ? 'active' : ''} onClick={() => setRole('TEACHER')}>Teacher</button>
             </div>
             
-            {/* Modular Login Components */}
             <div className="login-component-wrapper">
               {role === 'STUDENT' ? (
                 <StudentLogin onLogin={onAuthorizedLogin} />
@@ -343,13 +357,7 @@ export default function App() {
       {/* --- 4. CLASSROOM DASHBOARD --- */}
       {appMode === 'CLASSROOM_DASH' && (
         <>
-          {role === 'STUDENT' ? (
-            // New Student Dashboard
-            <StudentDashboard />
-          ) : (
-            // New Teacher Dashboard
-            <TeacherDashboard />
-          )}
+          {role === 'STUDENT' ? <StudentDashboard /> : <TeacherDashboard />}
         </>
       )}
     </div>
