@@ -1,0 +1,88 @@
+import React, { useState, useContext, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { PopCard, containerVariants } from '../ui/PopCard';
+import { UploadCloud, Image as ImageIcon, FileText, X } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
+import AssignmentCard from '../AssignmentCard'; // Keep your original path
+
+const AssignmentsView = () => {
+  const { assignments, setAssignments } = useContext(AppContext);
+  const [newAssignment, setNewAssignment] = useState({ id: null, title: '', description: '', dueDate: '' });
+  const [isDragging, setIsDragging] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState([]);
+  const fileInputRef = useRef(null);
+
+  const handleSaveAssignment = (e) => {
+    e.preventDefault();
+    if (!newAssignment.title) return;
+    const finalAssignment = { ...newAssignment, files: attachedFiles };
+    if (newAssignment.id) setAssignments(assignments.map(a => a.id === newAssignment.id ? finalAssignment : a));
+    else setAssignments([{ ...finalAssignment, id: Date.now(), status: 'Pending' }, ...assignments]);
+    
+    setNewAssignment({ id: null, title: '', description: '', dueDate: '' });
+    setAttachedFiles([]);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const newFiles = Array.from(e.dataTransfer.files).map(file => ({ name: file.name, size: (file.size / 1024 / 1024).toFixed(2) + ' MB', type: file.type }));
+      setAttachedFiles([...attachedFiles, ...newFiles]);
+    }
+  };
+  
+  const onFileSelect = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files).map(file => ({ name: file.name, size: (file.size / 1024 / 1024).toFixed(2) + ' MB', type: file.type }));
+      setAttachedFiles([...attachedFiles, ...newFiles]);
+    }
+  };
+  const removeFile = (index) => setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+      <PopCard style={{ height: 'fit-content' }}>
+        <h2 style={{ marginBottom: '1.5rem' }}>{newAssignment.id ? 'Edit Assignment' : 'Post Assignment'}</h2>
+        <form onSubmit={handleSaveAssignment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input type="text" placeholder="Title" value={newAssignment.title} onChange={e => setNewAssignment({...newAssignment, title: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
+          <textarea placeholder="Description" value={newAssignment.description} onChange={e => setNewAssignment({...newAssignment, description: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} rows="3" required />
+          <input type="date" value={newAssignment.dueDate} onChange={e => setNewAssignment({...newAssignment, dueDate: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
+          
+          <div style={{ marginTop: '0.5rem' }}>
+            <p style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem' }}>Attach Materials</p>
+            <div 
+              onDragOver={e => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={onDrop} onClick={() => fileInputRef.current.click()}
+              style={{ border: `2px dashed ${isDragging ? '#0284c7' : 'var(--border)'}`, background: isDragging ? '#e0f2fe' : 'var(--bg-main)', borderRadius: '12px', padding: '2rem 1rem', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <UploadCloud size={32} color={isDragging ? '#0284c7' : 'var(--text-muted)'} />
+              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: isDragging ? '#0284c7' : 'var(--text-main)' }}>Drag & drop files here, or click to browse</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Supported: PDF, DOCX, JPG, PNG</p>
+              <input type="file" multiple ref={fileInputRef} onChange={onFileSelect} style={{ display: 'none' }} accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+            </div>
+
+            {attachedFiles.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+                {attachedFiles.map((file, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 1rem', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {file.type.includes('image') ? <ImageIcon size={16} color="#10b981"/> : <FileText size={16} color="#2563eb"/>}
+                      <div><p style={{ fontSize: '0.85rem', fontWeight: 600, maxWidth: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</p></div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{file.size}</span><button type="button" onClick={(e) => { e.stopPropagation(); removeFile(idx); }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><X size={16}/></button></div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <button type="submit" className="btn primary-btn full-width" style={{ marginTop: '0.5rem' }}>{newAssignment.id ? 'Update' : 'Create Assignment'}</button>
+        </form>
+      </PopCard>
+      <motion.div variants={containerVariants}>
+        <h2 style={{ marginBottom: '1.5rem' }}>Active Assignments</h2>
+        {assignments.map(a => <PopCard key={a.id} style={{ padding: '0', marginBottom: '1.5rem' }}><AssignmentCard assignment={a} role="Teacher" onEdit={setNewAssignment} /></PopCard>)}
+      </motion.div>
+    </motion.div>
+  );
+};
+export default AssignmentsView;
