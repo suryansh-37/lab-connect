@@ -43,7 +43,9 @@ Follow these steps to run the project locally.
    ```env
    MONGODB_URI=your_mongodb_connection_string
    PORT=5000
+   VITE_GEMINI_API_KEY=your_gemini_api_key
 
 4. **Run the app**
     ```bash
     npm run dev
+
