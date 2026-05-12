@@ -9,9 +9,10 @@ import CalendarView from './student/CalendarView';
 import MeetingsView from './student/MeetingsView';
 import AttendanceInsights from './student/AttendanceInsights';
 import HelpCenter from './student/HelpCenter';
+import AIAssistant from './student/AIAssistant';
 
 const StudentDashboard = ({ onOpenRoom, onLogout }) => {
-  const [activeSection, setActiveSection] = useState('library'); 
+  const [activeSection, setActiveSection] = useState('overview'); 
 
   const renderSection = () => {
     switch(activeSection) {
@@ -23,12 +24,13 @@ const StudentDashboard = ({ onOpenRoom, onLogout }) => {
       case 'meetings': return <MeetingsView />;
       case 'attendance': return <AttendanceInsights />;
       case 'support': return <HelpCenter />;
-      default: return <ResourceLibrary />;
+      case 'ai-assistant': return <AIAssistant />;
+      default: return <Overview setActiveSection={setActiveSection} onOpenRoom={onOpenRoom} />;
     }
   };
 
   return (
-    <div className="dashboard-layout" style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: 'var(--bg-main)' }}>
+    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg-main)' }}>
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} onLogout={onLogout} />
       
       <main className="dashboard-main" style={{ flex: 1, padding: '0', background: 'var(--bg-main)', overflowY: 'auto' }}>

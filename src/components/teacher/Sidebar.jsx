@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Home, Calendar, BookOpen, Settings, BarChart2, Video, CheckCircle, Smile, Target, PieChart, Download, BrainCircuit, MessageSquare, LogOut, Beaker, ClipboardList } from 'lucide-react';
+import { Home, Calendar, BookOpen, Settings, BarChart2, Video, CheckCircle, Smile, Target, PieChart, Download, BrainCircuit, MessageSquare, LogOut, Beaker, ClipboardList, FolderUp } from 'lucide-react';
 import { teachingLabs } from '../../data/mockData';
 
 const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
@@ -26,7 +26,9 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
         <div style={headerStyle}>Academia & Tools</div>
         {navItem('assignments', <ClipboardList size={18} />, 'Assignments')}
         {navItem('grading', <BarChart2 size={18} />, 'Grading Queue')}
-        {navItem('meetings', <Video size={18} />, 'Live Meetings')}
+        {navItem('meetings', <Video size={18} />, 'Zoom Meetings')}
+        {navItem('temp-lab', <MessageSquare size={18} />, 'Temp Lab Session')}
+        {navItem('resources', <FolderUp size={18} />, 'Resource Bank')}
         {navItem('attendance', <CheckCircle size={18} />, 'Attendance')}
         
         <div style={headerStyle}>Student Insight</div>
@@ -40,9 +42,6 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
         {navItem('communications', <MessageSquare size={18} />, 'Communications')}
       </nav>
       
-      <div style={{ padding: '0 1rem', marginTop: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-        <motion.button onClick={(e) => { e.preventDefault(); onLogout(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: '0.75rem 1rem', width: '100%', borderRadius: '12px' }} whileHover={{ backgroundColor: '#fee2e2' }} whileTap={{ scale: 0.95 }}><LogOut size={18} /> Sign Out</motion.button>
-      </div>
     </aside>
   );
 };

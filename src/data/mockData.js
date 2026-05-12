@@ -5,8 +5,8 @@ export const getScoreColor = (score) => {
 };
 
 export const teachingLabs = [
-  { id: 1, title: 'Cell Theory: Biol 101', code: 'BIOL 101', session: '04', iconType: 'beaker', iconColor: '#2563eb', progress: 75, banner: 'https://images.unsplash.com/photo-1579389083078-4e7018379f7e?q=80&w=600' },
-  { id: 2, title: 'Visual Hierarchy Essay', code: 'DS II', session: '02', iconType: 'book', iconColor: '#059669', progress: 60, banner: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=600' },
+  { id: 1, title: 'Cell Theory: Biol 101', code: 'BIOL 101', session: '04', iconType: 'beaker', iconColor: '#2563eb', progress: 75, banner: '/biology_illustration.png' },
+  { id: 2, title: 'Visual Hierarchy Essay', code: 'DS II', session: '02', iconType: 'book', iconColor: '#059669', progress: 60, banner: '/design_illustration.png' },
 ];
 
 export const recentActivity = [

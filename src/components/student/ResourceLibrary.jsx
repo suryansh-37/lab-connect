@@ -1,15 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Folder, MoreVertical, FileText, Video, UploadCloud, SlidersHorizontal, Grid, Plus } from 'lucide-react';
 
 const ResourceLibrary = () => {
-  const folders = [
-    { title: 'Advanced Physics', code: 'PHY-402 • Sem B', count: 42, updated: 'Updated 2h ago', bg: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' },
-    { title: 'Modernist Poetry', code: 'LIT-210 • Sem A', count: 18, updated: 'Updated yesterday', bg: 'rgba(16, 185, 129, 0.1)', color: '#10b981' },
-    { title: 'Ethics in Design', code: 'DES-301 • Elective', count: 24, updated: 'Updated 1w ago', bg: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' },
-    { title: 'Microeconomics', code: 'ECO-102 • Sem B', count: 31, updated: 'Updated 4h ago', bg: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9' }
-  ];
+  const [resources, setResources] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const res = await fetch(`http://${window.location.hostname}:5000/api/resources`);
+        if (res.ok) {
+          const data = await res.json();
+          setResources(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch resources");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchResources();
+  }, []);
+
+  const classGroups = ['General', ...new Set(resources.map(r => r.classGroup).filter(c => c !== 'General'))];
+  
+  const folders = classGroups.map((group, idx) => {
+    const count = resources.filter(r => r.classGroup === group).length;
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#8b5cf6'];
+    const color = colors[idx % colors.length];
+    return {
+      title: group === 'General' ? 'General Resources' : group,
+      code: group === 'General' ? 'Broadcast' : 'Course Module',
+      count: count,
+      bg: `${color}15`,
+      color: color
+    };
+  });
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
@@ -43,21 +71,25 @@ const ResourceLibrary = () => {
 
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)' }}>Recent Files</h2>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)' }}>Shared Resources ({resources.length})</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {[
-            { name: 'Quantum_Tunneling.pdf', size: '2.4 MB', course: 'PHY-402', time: 'Just now', icon: <FileText size={20} color="#ef4444"/>, bg: 'rgba(239, 68, 68, 0.1)' },
-            { name: 'Eliot_Notes.docx', size: '842 KB', course: 'LIT-210', time: '1 hour ago', icon: <FileText size={20} color="#3b82f6"/>, bg: 'rgba(59, 130, 246, 0.1)' }
-          ].map((file, idx) => (
-            <PopCard key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', background: 'var(--bg-main)' }}>
+          {isLoading ? (
+            <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Loading materials...</p>
+          ) : resources.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+               <UploadCloud size={40} color="var(--text-muted)" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+               <p style={{ color: 'var(--text-muted)' }}>No shared resources available at the moment.</p>
+            </div>
+          ) : resources.map((file, idx) => (
+            <PopCard key={file._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', background: 'var(--bg-main)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                <div style={{ background: file.bg, padding: '0.8rem', borderRadius: '12px' }}>{file.icon}</div>
-                <div><h4 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{file.name}</h4><span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{file.size}</span></div>
+                <div style={{ background: '#3b82f615', padding: '0.8rem', borderRadius: '12px' }}><FileText size={20} color="#3b82f6"/></div>
+                <div><h4 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{file.title}</h4><span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{file.description}</span></div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
-                <span style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '0.3rem 0.8rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>{file.course}</span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', width: '80px', textAlign: 'right' }}>{file.time}</span>
+                <span style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '0.3rem 0.8rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>{file.classGroup}</span>
+                <a href={file.url} target="_blank" rel="noreferrer" style={{ background: '#0284c7', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }}>Open Link</a>
               </div>
             </PopCard>
           ))}

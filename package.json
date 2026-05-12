@@ -10,9 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.577.0",
+    "mongoose": "^9.4.1",
     "motion": "^12.38.0",
+    "nodemailer": "^8.0.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

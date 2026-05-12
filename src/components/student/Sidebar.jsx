@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Home, Calendar, BookOpen, Video, Folder, MessageSquare, LogOut, ClipboardList, Target, HelpCircle, UserCheck } from 'lucide-react';
+import { Home, Calendar, BookOpen, Video, Folder, MessageSquare, LogOut, ClipboardList, Target, HelpCircle, UserCheck, Bot } from 'lucide-react';
 
 const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
   const navItem = (section, icon, label) => (
@@ -30,6 +30,7 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
         <div style={headerStyle}>Insights & Connect</div>
         {navItem('attendance', <UserCheck size={18} />, 'Attendance & Progress')}
         {navItem('communications', <MessageSquare size={18} />, 'Communications')}
+        {navItem('ai-assistant', <Bot size={18} />, 'AI Assistant')}
         {navItem('support', <HelpCircle size={18} />, 'Help Center')}
       </nav>
       

@@ -20,7 +20,7 @@ const TeacherDashboard = ({ onOpenRoom, onLogout }) => {
   };
 
   return (
-    <div className="dashboard-layout" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} onLogout={onLogout} />
       
       <main className="dashboard-main" style={{ flex: 1, padding: '0', background: 'var(--bg-main)', overflowY: 'auto' }}>
