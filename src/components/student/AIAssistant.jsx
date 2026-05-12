@@ -94,7 +94,7 @@ const AIAssistant = () => {
     setIsTyping(true);
 
     try {
-      const API_KEY = 'AIzaSyArrkdBFqkqlCgRZP8lqqgp8kw8w6K5fZo';
+      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       const promptWithSystem = `System: You are an expert AI Study Assistant. Structure your responses clearly with bolding (**text**), bullet points (-) or numbered lists (1.), and headers (## or ###). Keep explanations educational, professional, and clear.
       
       User Question: ${userText}`;
