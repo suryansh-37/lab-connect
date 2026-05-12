@@ -1,16 +1,49 @@
-# React + Vite
+# LabConnect
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application for teacher and student interaction, similar to Google Classroom. It provides a shared space for classes, combining assignment tracking, messaging, and live online sessions.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Student & Teacher Views:** Separate dashboards with tools specific to each role.
+* **Group Chat:** Text messaging for classroom discussions and quick questions.
+* **Video Calls:** Built-in video feature for online lectures and lab sessions.
+* **Assignments:** Teachers can post tasks, and students can upload their completed work.
+* **Resource Library:** A section to upload and download study materials.
+* **Attendance:** Tools for teachers to track who is present during active sessions.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Frontend:** React.js, Vite
+* **Backend:** Node.js, Express.js (server.js)
+* **Database:** MongoDB (Mongoose models)
 
-## Expanding the ESLint configuration
+## Setup Instructions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Follow these steps to run the project locally.
+
+### Prerequisites
+
+* [Node.js](https://nodejs.org/) installed
+* [Git](https://git-scm.com/) installed
+* A local MongoDB instance or a MongoDB Atlas account
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
+   cd your-repo-name
+2. **Install Dependencies**
+    ```bash 
+    npm install
+
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory and add your database credentials and API keys. 
+   *(Note: .env is in .gitignore, so it won't be pushed to GitHub)*
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   PORT=5000
+
+4. **Run the app**
+    ```bash
+    npm run dev
