@@ -28,7 +28,7 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
   const fetchMessages = async () => {
       try {
           const q = new URLSearchParams({ sender: activeSender, isTyping: isTyping.toString(), isHost: isHostActive.toString() });
-          const res = await fetch(`http://${window.location.hostname}:5000/api/messages/${encodeURIComponent(activeRoomId)}?${q}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${encodeURIComponent(activeRoomId)}?${q}`);
           if (res.ok) {
               const data = await res.json();
               setMessages(data.messages);
@@ -43,7 +43,7 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
   const checkSessionAlive = async () => {
       if (isHostActive || sessionEnded) return;
       try {
-          const res = await fetch(`http://${window.location.hostname}:5000/api/sessions/status/${encodeURIComponent(activeRoomId)}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions/status/${encodeURIComponent(activeRoomId)}`);
           if (res.ok) {
               const data = await res.json();
               if (!data.active) {
@@ -71,7 +71,7 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
     };
     
     try {
-        await fetch(`http://${window.location.hostname}:5000/api/messages`, {
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...defaultPayload, ...payloadOverride })
         });
@@ -83,7 +83,7 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
 
   const handleTerminateSession = async () => {
       try {
-          await fetch(`http://${window.location.hostname}:5000/api/sessions/by-title/${encodeURIComponent(activeRoomId)}`, { method: 'DELETE' });
+          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions/by-title/${encodeURIComponent(activeRoomId)}`, { method: 'DELETE' });
           setShowTerminateConfirm(false);
           onBack();
       } catch (e) {

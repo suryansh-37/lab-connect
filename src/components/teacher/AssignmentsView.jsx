@@ -15,7 +15,7 @@ const AssignmentsView = () => {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const res = await fetch(`http://${window.location.hostname}:5000/api/assignments`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/assignments`);
         if (res.ok) {
           const data = await res.json();
           setAssignments(data);
@@ -65,7 +65,7 @@ const AssignmentsView = () => {
     };
 
     try {
-      const res = await fetch(`http://${window.location.hostname}:5000/api/assignments`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

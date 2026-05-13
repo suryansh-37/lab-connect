@@ -10,7 +10,7 @@ const ResourceLibrary = () => {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const res = await fetch(`http://${window.location.hostname}:5000/api/resources`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`);
         if (res.ok) {
           const data = await res.json();
           setResources(data);

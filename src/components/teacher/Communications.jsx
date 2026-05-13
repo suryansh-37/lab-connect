@@ -12,7 +12,7 @@ const Communications = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`http://${window.location.hostname}:5000/api/messages/${activeChatId}?sender=Teacher Jenkins`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${activeChatId}?sender=Teacher Jenkins`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages || []);
@@ -60,7 +60,7 @@ const Communications = () => {
     };
 
     try {
-      const res = await fetch(`http://${window.location.hostname}:5000/api/messages`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

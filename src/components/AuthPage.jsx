@@ -29,7 +29,7 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
             return;
         }
 
-        const res = await fetch(`http://${window.location.hostname}:5000/api/auth/register`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fullName, email, password, role })
@@ -42,7 +42,7 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
         setErrorMsg("✅ Account Created Successfully! Please Sign In.");
       } else {
         // --- LOGIN ---
-        const res = await fetch(`http://${window.location.hostname}:5000/api/auth/login`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password, role })

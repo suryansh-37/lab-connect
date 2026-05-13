@@ -19,7 +19,7 @@ const ResourceRoom = () => {
 
   const fetchResources = async () => {
       try {
-          const res = await fetch(`http://${window.location.hostname}:5000/api/resources`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`);
           const data = await res.json();
           if (res.ok) setResources(data);
       } catch (err) {
@@ -37,7 +37,7 @@ const ResourceRoom = () => {
     setErrorMsg('');
     try {
         const payload = { title, description, url, classGroup, uploadedBy: 'Teacher Admin' };
-        const res = await fetch(`http://${window.location.hostname}:5000/api/resources`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

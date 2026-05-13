@@ -12,7 +12,7 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
 
   const fetchSubmissions = async () => {
     try {
-      const res = await fetch(`http://${window.location.hostname}:5000/api/submissions/${assignment.id || assignment._id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/submissions/${assignment.id || assignment._id}`);
       if (res.ok) {
         const data = await res.json();
         setSubmissionData(data);
@@ -40,7 +40,7 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
         fileData: reader.result
       };
       try {
-        const res = await fetch(`http://${window.location.hostname}:5000/api/submissions`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/submissions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
