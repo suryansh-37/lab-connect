@@ -14,11 +14,17 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-    origin: [
-        'https://lab-connect-chi.vercel.app',
-        'http://localhost:5173',
-        'http://localhost:3000'
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        
+        // Allow localhost and any vercel.app subdomain
+        if (origin.includes('localhost') || origin.includes('vercel.app')) {
+            return callback(null, true);
+        }
+        
+        return callback(new Error('CORS Policy: Origin not allowed'), false);
+    },
     credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
