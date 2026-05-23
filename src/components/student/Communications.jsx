@@ -35,6 +35,7 @@ const Communications = () => {
   const [messageInput, setMessageInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [chatRooms, setChatRooms] = useState([]);
 
   const fetchMessages = async () => {
     try {
@@ -49,6 +50,30 @@ const Communications = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchChatRooms = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+      if (res.ok) {
+        const data = await res.json();
+        setChatRooms(Array.isArray(data) ? data.filter(s => s.isTempChat) : []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch chat rooms", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [activeChatId]);
+
+  useEffect(() => {
+    fetchChatRooms();
+    const interval = setInterval(fetchChatRooms, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [isTypingAI, setIsTypingAI] = useState(false);
 
@@ -115,6 +140,12 @@ const Communications = () => {
               <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>GS</div>
               <div style={{ flex: 1 }}><h4 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>Global Stream</h4><p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Class-wide communication</p></div>
             </div>
+            {chatRooms.map(room => (
+              <div key={room._id} onClick={() => setActiveChatId(room.title)} style={{ padding: '1.25rem 1.5rem', background: activeChatId === room.title ? 'rgba(2, 132, 199, 0.1)' : 'transparent', borderLeft: activeChatId === room.title ? '4px solid #0284c7' : '4px solid transparent', display: 'flex', gap: '1rem', cursor: 'pointer' }}>
+                <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'rgba(2, 132, 199, 0.2)', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>TR</div>
+                <div style={{ flex: 1 }}><h4 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>{room.title}</h4><p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Generated Room</p></div>
+              </div>
+            ))}
           </div>
         </div>
 

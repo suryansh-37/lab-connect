@@ -9,6 +9,7 @@ const Communications = () => {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [chatRooms, setChatRooms] = useState([]);
 
   const fetchMessages = async () => {
     try {
@@ -23,6 +24,30 @@ const Communications = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchChatRooms = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+      if (res.ok) {
+        const data = await res.json();
+        setChatRooms(Array.isArray(data) ? data.filter(s => s.isTempChat) : []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch chat rooms", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [activeChatId]);
+
+  useEffect(() => {
+    fetchChatRooms();
+    const interval = setInterval(fetchChatRooms, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [isTypingAI, setIsTypingAI] = useState(false);
 
@@ -87,6 +112,12 @@ const Communications = () => {
               <div style={{ position: 'relative' }}><div style={{ width: '45px', height: '45px', borderRadius: '12px', background: '#86efac', color: '#14532d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Beaker size={24}/></div></div>
               <div style={{ flex: 1 }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}><h4 style={{ fontWeight: 700, fontSize: '0.95rem' }}>Global Stream</h4><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Class-wide</span></div><p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>Active classroom communication channel</p></div>
             </div>
+            {chatRooms.map(room => (
+              <div key={room._id} onClick={() => setActiveChatId(room.title)} style={{ padding: '1.25rem 1.5rem', background: activeChatId === room.title ? '#f0f9ff' : 'transparent', borderLeft: activeChatId === room.title ? '4px solid #0284c7' : '4px solid transparent', display: 'flex', gap: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <div style={{ position: 'relative' }}><div style={{ width: '45px', height: '45px', borderRadius: '12px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Users size={24}/></div></div>
+                <div style={{ flex: 1 }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}><h4 style={{ fontWeight: 700, fontSize: '0.95rem' }}>{room.title}</h4><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Temp</span></div><p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>Generated Room</p></div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -94,12 +125,12 @@ const Communications = () => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'white', minWidth: 0, minHeight: 0, maxHeight: '100%' }}>
           <div style={{ padding: '1.25rem 2rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', zIndex: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.02)', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: activeChatId === 'group-a' ? '#86efac' : '#e0f2fe', color: activeChatId === 'group-a' ? '#14532d' : '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-                {activeChatId === 'group-a' ? <Users size={24} /> : <User size={24} />}
+              <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: activeChatId === 'global-stream' ? '#86efac' : '#e0f2fe', color: activeChatId === 'global-stream' ? '#14532d' : '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                {activeChatId === 'global-stream' ? <Beaker size={24} /> : <Users size={24} />}
               </div>
               <div>
                 <h4 style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-main)' }}>
-                  {activeChatId === 'group-a' ? 'Bio 101 - Group A' : activeChatId === 'elena-vance' ? 'Elena Vance' : 'Marcus Chen'}
+                  {activeChatId === 'global-stream' ? 'Global Stream' : activeChatId}
                 </h4>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#10b981', fontWeight: 600, marginTop: '0.2rem' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 5px rgba(16,185,129,0.5)' }} /> Active Session
@@ -148,8 +179,8 @@ const Communications = () => {
                         <input type="file" accept=".pdf,.doc,.docx,.txt" style={{ display: 'none' }} onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
-                            const newMessage = { id: Date.now(), sender: 'You', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Here is the requested document.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
-                            setChatMessages({ ...chatMessages, [activeChatId]: [...(chatMessages[activeChatId] || []), newMessage] });
+                            const newMessage = { id: Date.now(), sender: 'Teacher Jenkins', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Here is the requested document.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
+                            setMessages([...messages, newMessage]);
                             setShowAttachMenu(false);
                             e.target.value = '';
                           }
@@ -162,8 +193,8 @@ const Communications = () => {
                         <input type="file" accept="image/*,video/*" style={{ display: 'none' }} onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
-                            const newMessage = { id: Date.now(), sender: 'You', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Uploaded media file.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
-                            setChatMessages({ ...chatMessages, [activeChatId]: [...(chatMessages[activeChatId] || []), newMessage] });
+                            const newMessage = { id: Date.now(), sender: 'Teacher Jenkins', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Uploaded media file.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
+                            setMessages([...messages, newMessage]);
                             setShowAttachMenu(false);
                             e.target.value = '';
                           }

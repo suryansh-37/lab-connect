@@ -17,12 +17,12 @@ app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl)
         if (!origin) return callback(null, true);
-        
+
         // Allow localhost and any vercel.app subdomain
         if (origin.includes('localhost') || origin.includes('vercel.app')) {
             return callback(null, true);
         }
-        
+
         return callback(new Error('CORS Policy: Origin not allowed'), false);
     },
     credentials: true
@@ -39,11 +39,11 @@ if (!MONGODB_URI) {
 }
 
 mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log("✅ SUCCESS: Successfully connected to MongoDB Database!");
-    app.listen(PORT, () => console.log(`🚀 Backend Server is running efficiently on http://localhost:${PORT}`));
-  })
-  .catch((error) => console.error("❌ ERROR: Failed to connect!", error));
+    .then(() => {
+        console.log("✅ SUCCESS: Successfully connected to MongoDB Database!");
+        app.listen(PORT, () => console.log(`🚀 Backend Server is running efficiently on http://localhost:${PORT}`));
+    })
+    .catch((error) => console.error("❌ ERROR: Failed to connect!", error));
 
 // ==========================================
 // 🔐 AUTHENTICATION ROUTES (Simplified Login)
@@ -58,7 +58,7 @@ app.post('/api/auth/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ fullName, email, password: hashedPassword, role });
         await newUser.save();
-        
+
         return res.status(201).json({ message: "Registration absolute success!" });
     } catch (err) {
         return res.status(500).json({ message: "Server fault during registration." });
@@ -164,7 +164,7 @@ app.get('/api/sessions', async (req, res) => {
 app.post('/api/sessions', async (req, res) => {
     try {
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        
+
         let sessionTitle = req.body.title;
         if (req.body.isTempChat) {
             sessionTitle = `${sessionTitle} [OTP: ${otpCode}]`;
@@ -181,7 +181,7 @@ app.get('/api/sessions/join/:otp', async (req, res) => {
         const session = await Session.findOne({ otp: req.params.otp });
         if (!session) return res.status(404).json({ message: "Invalid or officially expired Session OTP code." });
         res.json(session);
-    } catch(err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // Check if a session is still alive by its title (roomId)
