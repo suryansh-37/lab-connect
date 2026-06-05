@@ -1,13 +1,16 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { UploadCloud, Image as ImageIcon, FileText, X } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 import AssignmentCard from '../AssignmentCard'; // Keep your original path
 
-const AssignmentsView = () => {
+const AssignmentsView = ({ profileData }) => {
   const { assignments, setAssignments } = useContext(AppContext);
-  const [newAssignment, setNewAssignment] = useState({ id: null, title: '', description: '', dueDate: '', lab: 'Biol 101' });
+  const [teacherClasses, setTeacherClasses] = useState([]);
+  const [newAssignment, setNewAssignment] = useState({ id: null, title: '', description: '', dueDate: '', lab: '', classId: '' });
   const [isDragging, setIsDragging] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const fileInputRef = useRef(null);
@@ -15,7 +18,7 @@ const AssignmentsView = () => {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/assignments`);
+        const res = await fetch(`${API_BASE_URL}/api/assignments`);
         if (res.ok) {
           const data = await res.json();
           setAssignments(data);
@@ -27,6 +30,44 @@ const AssignmentsView = () => {
     fetchAssignments();
   }, [setAssignments]);
 
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_BASE_URL}/api/classes/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTeacherClasses(data);
+          if (data.length > 0) {
+            setNewAssignment(prev => ({
+              ...prev,
+              lab: prev.lab || data[0].courseName,
+              classId: prev.classId || data[0]._id
+            }));
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch teacher classes', e);
+      }
+    };
+    fetchClasses();
+  }, []);
+
+  const handleEdit = (assignment) => {
+    setNewAssignment({
+      id: assignment._id || assignment.id,
+      title: assignment.title || '',
+      description: assignment.description || '',
+      dueDate: assignment.dueDate ? new Date(assignment.dueDate).toISOString().split('T')[0] : '',
+      lab: assignment.className || assignment.lab || '',
+      classId: assignment.classId || ''
+    });
+  };
+
   const handleSaveAssignment = async (e) => {
     e.preventDefault();
     if (!newAssignment.title) return;
@@ -34,7 +75,7 @@ const AssignmentsView = () => {
     let fileToUpload = { name: 'Materials.pdf', type: 'PDF Document', size: '0 MB', data: 'No Data' };
     
     if (attachedFiles.length > 0) {
-      const file = attachedFiles[0].raw; // I'll update onFileSelect to store the raw file
+      const file = attachedFiles[0].raw;
       const reader = new FileReader();
       
       const uploadPromise = new Promise((resolve) => {
@@ -55,28 +96,34 @@ const AssignmentsView = () => {
     const payload = {
       title: newAssignment.title,
       className: newAssignment.lab,
+      classId: newAssignment.classId,
       description: newAssignment.description,
       dueDate: newAssignment.dueDate,
       fileName: fileToUpload.name,
       fileType: fileToUpload.type,
       fileSize: fileToUpload.size,
       fileData: fileToUpload.data,
-      uploadedBy: 'Professor Jenkins'
+      uploadedBy: profileData?.fullName || 'Teacher'
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/assignments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const res = await axios.post(`${API_BASE_URL}/api/assignments/create`, payload);
+      if (res.status === 200 || res.status === 201) {
+        const saved = res.data;
         setAssignments([saved, ...assignments]);
-        setNewAssignment({ id: null, title: '', description: '', dueDate: '', lab: 'Biol 101' });
+        setNewAssignment({
+          id: null,
+          title: '',
+          description: '',
+          dueDate: '',
+          lab: teacherClasses[0]?.courseName || '',
+          classId: teacherClasses[0]?._id || ''
+        });
         setAttachedFiles([]);
       }
-    } catch (err) { console.error('Save failed', err); }
+    } catch (err) {
+      console.log('Save failed error debug:', err);
+    }
   };
 
   const onDrop = (e) => {
@@ -94,7 +141,7 @@ const AssignmentsView = () => {
         name: file.name, 
         size: (file.size / 1024 / 1024).toFixed(2) + ' MB', 
         type: file.type,
-        raw: file // Store the raw file object for handleSaveAssignment
+        raw: file
       }));
       setAttachedFiles([...attachedFiles, ...newFiles]);
     }
@@ -109,7 +156,24 @@ const AssignmentsView = () => {
           <input type="text" placeholder="Title" value={newAssignment.title} onChange={e => setNewAssignment({...newAssignment, title: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
           <textarea placeholder="Description" value={newAssignment.description} onChange={e => setNewAssignment({...newAssignment, description: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} rows="3" required />
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <input type="text" placeholder="Class (e.g. Biol 101)" value={newAssignment.lab} onChange={e => setNewAssignment({...newAssignment, lab: e.target.value})} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
+            <select 
+              value={newAssignment.classId} 
+              onChange={e => {
+                const selectedClass = teacherClasses.find(c => c._id === e.target.value);
+                setNewAssignment({
+                  ...newAssignment,
+                  classId: e.target.value,
+                  lab: selectedClass ? selectedClass.courseName : ''
+                });
+              }}
+              style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', fontSize: '0.9rem' }} 
+              required
+            >
+              <option value="" disabled>Select Class/Course</option>
+              {teacherClasses.map(c => (
+                <option key={c._id} value={c._id}>{c.courseName}</option>
+              ))}
+            </select>
             <input type="date" value={newAssignment.dueDate} onChange={e => setNewAssignment({...newAssignment, dueDate: e.target.value})} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
           </div>
           
@@ -144,7 +208,7 @@ const AssignmentsView = () => {
       </PopCard>
       <motion.div variants={containerVariants}>
         <h2 style={{ marginBottom: '1.5rem' }}>Active Assignments</h2>
-        {assignments.map(a => <PopCard key={a.id} style={{ padding: '0', marginBottom: '1.5rem' }}><AssignmentCard assignment={a} role="Teacher" onEdit={setNewAssignment} /></PopCard>)}
+        {assignments.map(a => <PopCard key={a.id || a._id} style={{ padding: '0', marginBottom: '1.5rem' }}><AssignmentCard assignment={a} role="Teacher" onEdit={handleEdit} profileData={profileData} /></PopCard>)}
       </motion.div>
     </motion.div>
   );

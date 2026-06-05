@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Edit3, Search, SlidersHorizontal, Beaker, Video, Phone, MoreVertical, Paperclip, Smile, Image as ImageIcon, Bold, Send, FileText, Users, Folder, Calendar as CalendarIcon, ClipboardList, User, Sparkles } from 'lucide-react';
 
-const Communications = () => {
+const Communications = ({ profileData }) => {
   const [activeChatId, setActiveChatId] = useState('global-stream');
   const [messageInput, setMessageInput] = useState('');
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chatRooms, setChatRooms] = useState([]);
+  const senderName = profileData?.fullName || 'Teacher';
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${activeChatId}?sender=Teacher Jenkins`);
+      const res = await fetch(`${API_BASE_URL}/api/messages/${activeChatId}?sender=${encodeURIComponent(senderName)}`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages || []);
@@ -27,7 +29,7 @@ const Communications = () => {
 
   const fetchChatRooms = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+      const res = await fetch(`${API_BASE_URL}/api/sessions`);
       if (res.ok) {
         const data = await res.json();
         setChatRooms(Array.isArray(data) ? data.filter(s => s.isTempChat) : []);
@@ -79,13 +81,13 @@ const Communications = () => {
 
     const payload = {
       roomId: activeChatId,
-      sender: 'Teacher Jenkins',
+      sender: senderName,
       text: messageInput,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages`, {
+      const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -141,11 +143,11 @@ const Communications = () => {
           <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', background: '#f8fafc' }}>
             <AnimatePresence>
               {messages.map((msg) => {
-                const isSelf = msg.sender === 'Teacher Jenkins';
+                const isSelf = msg.sender === senderName;
                 return (
                   <motion.div key={msg._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', gap: '1rem', alignSelf: isSelf ? 'flex-end' : 'flex-start', maxWidth: '75%', flexDirection: isSelf ? 'row-reverse' : 'row' }}>
                     <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: isSelf ? '#0ea5e9' : '#f59e0b', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0, boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
-                      {isSelf ? 'T' : msg.sender.charAt(0)}
+                      {isSelf ? senderName.charAt(0).toUpperCase() : msg.sender.charAt(0)}
                     </div>
                     <div style={{ background: isSelf ? '#0ea5e9' : 'white', color: isSelf ? 'white' : 'var(--text-main)', padding: '1rem 1.25rem', borderRadius: '18px', borderTopLeftRadius: !isSelf ? 0 : '18px', borderTopRightRadius: isSelf ? 0 : '18px', border: isSelf ? 'none' : '1px solid #e2e8f0', position: 'relative', boxShadow: '0 3px 10px rgba(0,0,0,0.04)' }}>
                       <p style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>{msg.text}</p>
@@ -179,7 +181,7 @@ const Communications = () => {
                         <input type="file" accept=".pdf,.doc,.docx,.txt" style={{ display: 'none' }} onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
-                            const newMessage = { id: Date.now(), sender: 'Teacher Jenkins', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Here is the requested document.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
+                            const newMessage = { id: Date.now(), sender: senderName, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Here is the requested document.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
                             setMessages([...messages, newMessage]);
                             setShowAttachMenu(false);
                             e.target.value = '';
@@ -193,7 +195,7 @@ const Communications = () => {
                         <input type="file" accept="image/*,video/*" style={{ display: 'none' }} onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
-                            const newMessage = { id: Date.now(), sender: 'Teacher Jenkins', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Uploaded media file.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
+                            const newMessage = { id: Date.now(), sender: senderName, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), text: "Uploaded media file.", isSelf: true, file: file.name, fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB' };
                             setMessages([...messages, newMessage]);
                             setShowAttachMenu(false);
                             e.target.value = '';

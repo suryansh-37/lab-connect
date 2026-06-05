@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Zap, MessageCircle, AlertTriangle, Users } from 'lucide-react';
@@ -11,7 +12,7 @@ const TempLabSession = ({ onOpenInternalChat }) => {
 
   const fetchTempSessions = async () => {
       try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+          const res = await fetch(`${API_BASE_URL}/api/sessions`);
           const data = await res.json();
           if (res.ok) {
               setSessions(Array.isArray(data) ? data : []);
@@ -37,7 +38,7 @@ const TempLabSession = ({ onOpenInternalChat }) => {
             link: isChat ? 'live-chat-internal' : `https://meet.google.com/sys-${Math.random().toString(36).substring(2,6)}`,
             createdBy: 'Instructor'
         };
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`, {
+        const res = await fetch(`${API_BASE_URL}/api/sessions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -58,7 +59,7 @@ const TempLabSession = ({ onOpenInternalChat }) => {
 
   const handleDelete = async (id) => {
       try {
-          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions/${id}`, { method: 'DELETE' });
+          await fetch(`${API_BASE_URL}/api/sessions/${id}`, { method: 'DELETE' });
           fetchTempSessions();
       } catch(e) {}
   };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { Mail, Lock, ArrowLeft, User, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -29,7 +30,7 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
             return;
         }
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, {
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fullName, email, password, role })
@@ -42,7 +43,7 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
         setErrorMsg("✅ Account Created Successfully! Please Sign In.");
       } else {
         // --- LOGIN ---
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
+        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password, role })
@@ -51,8 +52,14 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
 
         if (!res.ok) throw new Error(data.message);
 
-        // Simple Direct Connect!
-        onLoginSuccess(role);
+        const loggedInUser = data.user || {};
+        const loggedInRole = loggedInUser.role || role;
+
+        if (data.token) localStorage.setItem('token', data.token);
+        localStorage.setItem('userRole', loggedInRole);
+        localStorage.setItem('user', JSON.stringify(loggedInUser));
+
+        onLoginSuccess(loggedInRole, loggedInUser);
       }
     } catch (err) {
       setErrorMsg(err.message);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, LogOut, Hexagon } from 'lucide-react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import Home from './components/Home';
 import AuthPage from './components/AuthPage';
@@ -11,7 +12,16 @@ import ClassStream from './components/ClassStream';
 import QuickJoin from './components/QuickJoin';
 
 function App() {
-  const [currentView, setCurrentView] = useState(() => sessionStorage.getItem('currentView') || 'home');
+  const navigate = useNavigate();
+  const [currentView, setCurrentView] = useState(() => {
+    if (window.location.pathname.startsWith('/teacher-dashboard')) {
+      return 'teacher-dashboard';
+    }
+    if (window.location.pathname.startsWith('/student-dashboard')) {
+      return 'student-dashboard';
+    }
+    return sessionStorage.getItem('currentView') || 'home';
+  });
   const [userRole, setUserRole] = useState(() => sessionStorage.getItem('userRole') || null);
   const [activeSubject, setActiveSubject] = useState(() => sessionStorage.getItem('activeSubject') || null);
   const [userName, setUserName] = useState(() => sessionStorage.getItem('userName') || '');
@@ -37,17 +47,21 @@ function App() {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   useEffect(() => {
-    window.history.replaceState({ view: currentView, userRole, activeSubject }, '', `#${currentView}`);
+    const isDashboard = window.location.pathname.startsWith('/student-dashboard') || window.location.pathname.startsWith('/teacher-dashboard');
+    const path = isDashboard ? window.location.pathname : `#${currentView}`;
+    window.history.replaceState({ view: currentView, userRole, activeSubject }, '', path);
     
     const handlePopState = (event) => {
       if (event.state) {
         const { userRole: prevRole, currentView: prevView, activeSubject: prevSubject } = stateRef.current;
         
         // Prevent accidental logout on browser back button
-        if ((prevRole === 'Student' || prevRole === 'Teacher') && !event.state.userRole) {
+        if ((prevRole === 'Student' || prevRole === 'Teacher') && (!event.state || !event.state.userRole)) {
            const confirmLogout = window.confirm("Are you sure you want to quit and log out?");
            if (!confirmLogout) {
-              window.history.pushState({ view: prevView, userRole: prevRole, activeSubject: prevSubject }, '', `#${prevView}`);
+              const isDashboardView = prevView === 'student-dashboard' || prevView === 'teacher-dashboard';
+              const backPath = isDashboardView ? `/${prevView}` : `#${prevView}`;
+              window.history.pushState({ view: prevView, userRole: prevRole, activeSubject: prevSubject }, '', backPath);
               return;
            }
         }
@@ -72,14 +86,19 @@ function App() {
 
   const updateView = (view, newRole = userRole, newSubject = activeSubject) => {
     setCurrentView(view);
-    window.history.pushState({ view, userRole: newRole, activeSubject: newSubject }, '', `#${view}`);
+    const isDashboard = view === 'student-dashboard' || view === 'teacher-dashboard';
+    const path = isDashboard ? `/${view}` : `#${view}`;
+    window.history.pushState({ view, userRole: newRole, activeSubject: newSubject }, '', path);
   };
 
   const handleNavigate = (view) => updateView(view);
   
   const handleLoginSuccess = (role) => {
     setUserRole(role);
-    updateView(role === 'Student' ? 'student-dashboard' : 'teacher-dashboard', role, activeSubject);
+    const dashboardView = role === 'Student' ? 'student-dashboard' : 'teacher-dashboard';
+    const dashboardPath = role === 'Student' ? '/student-dashboard' : '/teacher-dashboard';
+    setCurrentView(dashboardView);
+    navigate(dashboardPath);
   };
 
   const handleOpenRoom = (roomType, subject) => {
@@ -93,12 +112,16 @@ function App() {
       if (confirmLeave) {
         setUserRole(null);
         setUserName('');
-        updateView('home', null, null);
+        setCurrentView('home');
         setActiveSubject(null);
+        navigate('/');
       }
     } else {
-      updateView(userRole === 'Student' ? 'student-dashboard' : 'teacher-dashboard', userRole, null);
+      const dashboardView = userRole === 'Student' ? 'student-dashboard' : 'teacher-dashboard';
+      const dashboardPath = userRole === 'Student' ? '/student-dashboard' : '/teacher-dashboard';
+      setCurrentView(dashboardView);
       setActiveSubject(null);
+      navigate(dashboardPath);
     }
   };
 
@@ -107,8 +130,9 @@ function App() {
     if (confirmLogout) {
       setUserRole(null);
       setUserName('');
-      updateView('home', null, null);
+      setCurrentView('home');
       setActiveSubject(null);
+      navigate('/');
     }
   };
 
@@ -117,6 +141,16 @@ function App() {
     setUserName(name);
     setActiveSubject(actualTitle);
     updateView('chat', 'Guest', actualTitle);
+  };
+
+  const handleForceLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setUserRole(null);
+    setUserName('');
+    setActiveSubject(null);
+    setCurrentView('student-auth');
+    navigate('/student-auth');
   };
 
   return (
@@ -148,17 +182,24 @@ function App() {
       </nav>
 
       <div className={`main-wrapper ${currentView !== 'home' ? 'locked' : ''}`}>
-        {currentView === 'home' && <div className="centered-view"><Home onNavigate={handleNavigate} /></div>}
-        {currentView === 'quick-join' && <QuickJoin onJoin={handleQuickJoinSubmit} onBack={() => handleNavigate('home')} />}
-        {currentView === 'student-auth' && <div className="centered-view"><AuthPage role="Student" onBack={() => handleNavigate('home')} onLoginSuccess={handleLoginSuccess} /></div>}
-        {currentView === 'teacher-auth' && <div className="centered-view"><AuthPage role="Teacher" onBack={() => handleNavigate('home')} onLoginSuccess={handleLoginSuccess} /></div>}
-        
-        {currentView === 'student-dashboard' && <StudentDashboard onOpenRoom={handleOpenRoom} onLogout={handleLogout} />}
-        {currentView === 'teacher-dashboard' && <TeacherDashboard onOpenRoom={handleOpenRoom} onLogout={handleLogout} />}
-        
-        {currentView === 'video' && <VideoConference subject={activeSubject} onBack={handleBackToDashboard} />}
-        {currentView === 'chat' && <GroupChat subject={activeSubject} userName={userName} userRole={userRole} onBack={handleBackToDashboard} />}
-        {currentView === 'stream' && <ClassStream subject={activeSubject} onBack={handleBackToDashboard} onOpenRoom={handleOpenRoom} />}
+        <Routes>
+          <Route path="/teacher-dashboard/class/:classId" element={<ClassStream onBack={handleBackToDashboard} onOpenRoom={handleOpenRoom} />} />
+          <Route path="*" element={
+            <>
+              {currentView === 'home' && <div className="centered-view"><Home onNavigate={handleNavigate} /></div>}
+              {currentView === 'quick-join' && <QuickJoin onJoin={handleQuickJoinSubmit} onBack={() => handleNavigate('home')} />}
+              {currentView === 'student-auth' && <div className="centered-view"><AuthPage role="Student" onBack={() => handleNavigate('home')} onLoginSuccess={handleLoginSuccess} /></div>}
+              {currentView === 'teacher-auth' && <div className="centered-view"><AuthPage role="Teacher" onBack={() => handleNavigate('home')} onLoginSuccess={handleLoginSuccess} /></div>}
+              
+              {currentView === 'student-dashboard' && <StudentDashboard onOpenRoom={handleOpenRoom} onLogout={handleLogout} onForceLogout={handleForceLogout} />}
+              {currentView === 'teacher-dashboard' && <TeacherDashboard onOpenRoom={handleOpenRoom} onLogout={handleLogout} onForceLogout={handleForceLogout} />}
+              
+              {currentView === 'video' && <VideoConference subject={activeSubject} onBack={handleBackToDashboard} />}
+              {currentView === 'chat' && <GroupChat subject={activeSubject} userName={userName} userRole={userRole} onBack={handleBackToDashboard} />}
+              {currentView === 'stream' && <ClassStream subject={activeSubject} onBack={handleBackToDashboard} onOpenRoom={handleOpenRoom} />}
+            </>
+          } />
+        </Routes>
       </div>
     </div>
   );

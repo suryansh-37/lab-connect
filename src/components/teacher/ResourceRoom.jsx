@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { BookOpen, Link as LinkIcon, Plus, Copy, AlertCircle } from 'lucide-react';
@@ -19,7 +20,7 @@ const ResourceRoom = () => {
 
   const fetchResources = async () => {
       try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`);
+          const res = await fetch(`${API_BASE_URL}/api/resources`);
           const data = await res.json();
           if (res.ok) setResources(data);
       } catch (err) {
@@ -37,7 +38,7 @@ const ResourceRoom = () => {
     setErrorMsg('');
     try {
         const payload = { title, description, url, classGroup, uploadedBy: 'Teacher Admin' };
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`, {
+        const res = await fetch(`${API_BASE_URL}/api/resources`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
