@@ -231,3 +231,72 @@ body {
 .add-comment input { flex: 1; border: 1px solid var(--border); border-radius: 20px; padding: 0.6rem 1rem; outline: none; background: var(--bg-main); }
 .add-comment input:focus { border-color: var(--accent); }
 @media (max-width: 768px) { .stream-grid { grid-template-columns: 1fr; } .stream-sidebar { display: none; } }
+
+/* =========================================
+   10. MOBILE VIEW BLOCKER
+========================================= */
+.mobile-blocker {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-blocker {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, var(--bg-card), var(--bg-main));
+    z-index: 100000;
+    padding: 2rem;
+    color: var(--text-main);
+  }
+
+  .mobile-blocker-content {
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .blocker-icon {
+    color: var(--accent);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .mobile-blocker-content h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text-main);
+  }
+
+  .mobile-blocker-content p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Hide navbar and main wrapper on phone screens */
+  .app-container > *:not(.mobile-blocker) {
+    display: none !important;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

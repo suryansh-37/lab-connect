@@ -15,14 +15,10 @@ dotenv.config();
 const app = express();
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl)
         if (!origin) return callback(null, true);
-
-        // Allow localhost and any vercel.app subdomain
         if (origin.includes('localhost') || origin.includes('vercel.app')) {
             return callback(null, true);
         }
-
         return callback(new Error('CORS Policy: Origin not allowed'), false);
     },
     credentials: true
@@ -46,7 +42,7 @@ mongoose.connect(MONGODB_URI)
     .catch((error) => console.error("❌ ERROR: Failed to connect!", error));
 
 // ==========================================
-// 🔐 AUTHENTICATION ROUTES (Simplified Login)
+// 🔐 AUTHENTICATION ROUTES
 // ==========================================
 
 app.post('/api/auth/register', async (req, res) => {
@@ -75,8 +71,16 @@ app.post('/api/auth/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials." });
 
-        // Direct Login Success!
-        return res.status(200).json({ message: "Login actively verified!", user: { fullName: user.fullName, email: user.email, role: user.role } });
+        // ✅ Direct Login Success - Now sending back the user's ID
+        return res.status(200).json({ 
+            message: "Login actively verified!", 
+            user: { 
+                id: user._id, 
+                fullName: user.fullName, 
+                email: user.email, 
+                role: user.role 
+            } 
+        });
     } catch (err) {
         return res.status(500).json({ message: "Server error at login phase." });
     }
@@ -86,29 +90,37 @@ app.post('/api/auth/login', async (req, res) => {
 // 📚 RESOURCE HUB ROUTES
 // ==========================================
 
+// Get all resources
 app.get('/api/resources', async (req, res) => {
     try {
         const resources = await Resource.find().sort({ createdAt: -1 });
         res.json(resources);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ Get resources created by a specific user
+app.get('/api/resources/user/:userId', async (req, res) => {
+    try {
+        const userResources = await Resource.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+        res.json(userResources);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Create resource tied to a user
 app.post('/api/resources', async (req, res) => {
     try {
+        if (!req.body.userId) return res.status(400).json({ message: "Missing userId" });
         const newResource = new Resource(req.body);
         await newResource.save();
         res.status(201).json(newResource);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ==========================================
 // 📝 ASSIGNMENT ROUTES
 // ==========================================
 
+// Get all assignments
 app.get('/api/assignments', async (req, res) => {
     try {
         const assignments = await Assignment.find().sort({ createdAt: -1 });
@@ -116,8 +128,18 @@ app.get('/api/assignments', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ Get assignments created by a specific user (e.g., a teacher)
+app.get('/api/assignments/user/:userId', async (req, res) => {
+    try {
+        const userAssignments = await Assignment.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+        res.json(userAssignments);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Create assignment tied to a user
 app.post('/api/assignments', async (req, res) => {
     try {
+        if (!req.body.userId) return res.status(400).json({ message: "Missing userId" });
         const newAssignment = new Assignment(req.body);
         await newAssignment.save();
         res.status(201).json(newAssignment);
@@ -135,6 +157,7 @@ app.delete('/api/assignments/:id', async (req, res) => {
 // 📤 SUBMISSION ROUTES
 // ==========================================
 
+// Get submissions for a specific assignment
 app.get('/api/submissions/:assignmentId', async (req, res) => {
     try {
         const submissions = await Submission.find({ assignmentId: req.params.assignmentId }).sort({ createdAt: -1 });
@@ -142,8 +165,18 @@ app.get('/api/submissions/:assignmentId', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ Get submissions created by a specific student
+app.get('/api/submissions/user/:userId', async (req, res) => {
+    try {
+        const userSubmissions = await Submission.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+        res.json(userSubmissions);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Create submission tied to a student
 app.post('/api/submissions', async (req, res) => {
     try {
+        if (!req.body.userId) return res.status(400).json({ message: "Missing userId" });
         const newSubmission = new Submission(req.body);
         await newSubmission.save();
         res.status(201).json(newSubmission);
@@ -164,12 +197,10 @@ app.get('/api/sessions', async (req, res) => {
 app.post('/api/sessions', async (req, res) => {
     try {
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-
         let sessionTitle = req.body.title;
         if (req.body.isTempChat) {
             sessionTitle = `${sessionTitle} [OTP: ${otpCode}]`;
         }
-
         const newSession = new Session({ ...req.body, title: sessionTitle, otp: otpCode });
         await newSession.save();
         res.status(201).json(newSession);
@@ -184,7 +215,6 @@ app.get('/api/sessions/join/:otp', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Check if a session is still alive by its title (roomId)
 app.get('/api/sessions/status/:roomId', async (req, res) => {
     try {
         const session = await Session.findOne({ title: req.params.roomId });
@@ -197,7 +227,6 @@ app.delete('/api/sessions/:id', async (req, res) => {
         const session = await Session.findById(req.params.id);
         if (session) {
             await Message.deleteMany({ roomId: session.title });
-            // Clear presence data for this room
             if (roomPresence[session.title]) delete roomPresence[session.title];
             await Session.findByIdAndDelete(req.params.id);
         }
@@ -205,7 +234,6 @@ app.delete('/api/sessions/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Terminate by room title (used from within GroupChat)
 app.delete('/api/sessions/by-title/:title', async (req, res) => {
     try {
         const title = decodeURIComponent(req.params.title);
@@ -223,7 +251,6 @@ app.delete('/api/sessions/by-title/:title', async (req, res) => {
 // 💬 CHAT MESSAGING ROUTES
 // ==========================================
 
-// Volatile local memory explicitly for GroupChat Presence
 const roomPresence = {};
 
 app.get('/api/messages/:roomId', async (req, res) => {

@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Award, BookOpen, ChevronRight, Target } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
 
 const Overview = ({ setActiveSection, onOpenRoom }) => {
+  const { currentUser } = useContext(AppContext);
+  const name = currentUser?.fullName || "Alexander";
+
   const teachingLabs = [
     { id: 1, title: 'Advanced Physics', code: 'Dr. Aris Thorne • Room 402', session: '04', progress: 65, status: 'A- GRADE', icon: <Target size={24}/>, banner: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=600' },
     { id: 2, title: 'Modernist Poetry', code: 'Prof. Elena Vance • Online', session: '02', progress: 42, status: 'B+ GRADE', icon: <BookOpen size={24}/>, banner: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=600' }
@@ -12,7 +16,7 @@ const Overview = ({ setActiveSection, onOpenRoom }) => {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Welcome back, Alexander</h1>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Welcome back, {name}</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', fontStyle: 'italic' }}>"The mind is not a vessel to be filled, but a fire to be kindled."</p>
       </div>
 

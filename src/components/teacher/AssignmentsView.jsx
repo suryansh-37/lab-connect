@@ -6,7 +6,7 @@ import { AppContext } from '../../context/AppContext';
 import AssignmentCard from '../AssignmentCard'; // Keep your original path
 
 const AssignmentsView = () => {
-  const { assignments, setAssignments } = useContext(AppContext);
+  const { currentUser, assignments, setAssignments } = useContext(AppContext);
   const [newAssignment, setNewAssignment] = useState({ id: null, title: '', description: '', dueDate: '', lab: 'Biol 101' });
   const [isDragging, setIsDragging] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState([]);
@@ -61,7 +61,7 @@ const AssignmentsView = () => {
       fileType: fileToUpload.type,
       fileSize: fileToUpload.size,
       fileData: fileToUpload.data,
-      uploadedBy: 'Professor Jenkins'
+      uploadedBy: currentUser?.fullName || 'Professor Jenkins'
     };
 
     try {

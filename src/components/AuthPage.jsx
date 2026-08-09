@@ -51,8 +51,8 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
 
         if (!res.ok) throw new Error(data.message);
 
-        // Simple Direct Connect!
-        onLoginSuccess(role);
+        // Pass full user metadata to callback!
+        onLoginSuccess(data.user);
       }
     } catch (err) {
       setErrorMsg(err.message);

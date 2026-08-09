@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Zap, TrendingUp, MoreVertical, Users, ClipboardList, Lightbulb, Upload } from 'lucide-react';
 import { teachingLabs, recentActivity } from '../../data/mockData';
+import { AppContext } from '../../context/AppContext';
 
-const Overview = ({ setActiveSection, onOpenRoom }) => {
+// Replaced props to consume currentUser via context
+const Overview = ({ setActiveSection, onOpenRoom }) => { 
+  const { currentUser } = useContext(AppContext);
   return (
   <motion.div variants={containerVariants} initial="hidden" animate="show">
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
-      <div><h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Welcome back, Professor Jenkins</h1><p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>You have 12 assignments to grade and 3 classes today.</p></div>
+      <div>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+          Welcome back, {currentUser?.fullName || 'surya'}
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>You have 12 assignments to grade and 3 classes today.</p>
+      </div>
       <div style={{ background: '#fef3c7', color: '#854d0e', padding: '0.75rem 1.5rem', borderRadius: '25px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Zap size={18}/> Next Class: Bio 101</div>
     </div>
 

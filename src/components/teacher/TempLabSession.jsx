@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Zap, MessageCircle, AlertTriangle, Users } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
 
 const TempLabSession = ({ onOpenInternalChat }) => {
   const [sessions, setSessions] = useState([]);
@@ -23,6 +24,8 @@ const TempLabSession = ({ onOpenInternalChat }) => {
 
   useEffect(() => { fetchTempSessions(); }, []);
 
+  const { currentUser } = useContext(AppContext);
+
   const handleCreateTempSession = async (isChat) => {
     if (!newTitle.trim()) return;
     setIsLoading(true);
@@ -35,7 +38,7 @@ const TempLabSession = ({ onOpenInternalChat }) => {
             date: new Date().toLocaleDateString(), 
             time: new Date().toLocaleTimeString(), 
             link: isChat ? 'live-chat-internal' : `https://meet.google.com/sys-${Math.random().toString(36).substring(2,6)}`,
-            createdBy: 'Instructor'
+            createdBy: currentUser?.fullName || 'Instructor'
         };
         const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`, {
             method: 'POST',

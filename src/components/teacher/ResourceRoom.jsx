@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { BookOpen, Link as LinkIcon, Plus, Copy, AlertCircle } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -31,12 +32,14 @@ const ResourceRoom = () => {
       fetchResources();
   }, []);
 
+  const { currentUser } = useContext(AppContext);
+
   const handleShare = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg('');
     try {
-        const payload = { title, description, url, classGroup, uploadedBy: 'Teacher Admin' };
+        const payload = { title, description, url, classGroup, uploadedBy: currentUser?.fullName || 'Teacher Admin' };
         const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

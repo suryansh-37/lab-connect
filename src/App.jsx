@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Moon, Sun, LogOut, Hexagon } from 'lucide-react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Moon, Sun, LogOut, Hexagon, Monitor } from 'lucide-react';
+import { AppContext } from './context/AppContext';
 
 import Home from './components/Home';
 import AuthPage from './components/AuthPage';
@@ -11,11 +12,19 @@ import ClassStream from './components/ClassStream';
 import QuickJoin from './components/QuickJoin';
 
 function App() {
+  const { currentUser, setCurrentUser } = useContext(AppContext);
   const [currentView, setCurrentView] = useState(() => sessionStorage.getItem('currentView') || 'home');
   const [userRole, setUserRole] = useState(() => sessionStorage.getItem('userRole') || null);
   const [activeSubject, setActiveSubject] = useState(() => sessionStorage.getItem('activeSubject') || null);
   const [userName, setUserName] = useState(() => sessionStorage.getItem('userName') || '');
   const [isDarkMode, setIsDarkMode] = useState(() => sessionStorage.getItem('isDarkMode') === 'true');
+
+  useEffect(() => {
+    if (currentUser) {
+      setUserRole(currentUser.role);
+      setUserName(currentUser.fullName);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     sessionStorage.setItem('currentView', currentView);
@@ -77,9 +86,11 @@ function App() {
 
   const handleNavigate = (view) => updateView(view);
   
-  const handleLoginSuccess = (role) => {
-    setUserRole(role);
-    updateView(role === 'Student' ? 'student-dashboard' : 'teacher-dashboard', role, activeSubject);
+  const handleLoginSuccess = (userObj) => {
+    setCurrentUser(userObj);
+    setUserRole(userObj.role);
+    setUserName(userObj.fullName);
+    updateView(userObj.role === 'Student' ? 'student-dashboard' : 'teacher-dashboard', userObj.role, activeSubject);
   };
 
   const handleOpenRoom = (roomType, subject) => {
@@ -107,6 +118,7 @@ function App() {
     if (confirmLogout) {
       setUserRole(null);
       setUserName('');
+      setCurrentUser(null);
       updateView('home', null, null);
       setActiveSubject(null);
     }
@@ -121,6 +133,13 @@ function App() {
 
   return (
     <div className={`app-container ${currentView !== 'home' ? 'locked' : ''}`}>
+      <div className="mobile-blocker">
+        <div className="mobile-blocker-content">
+          <Monitor size={48} className="blocker-icon" />
+          <h2>Use computer to access this site</h2>
+          <p>This web application is optimized for desktop and laptop environments only.</p>
+        </div>
+      </div>
       <nav className="navbar">
         <div className="brand" onClick={() => userRole ? handleBackToDashboard() : handleNavigate('home')} 
              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', height: '40px' }}>

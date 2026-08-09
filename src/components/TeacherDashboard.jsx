@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Sidebar from './teacher/Sidebar';
 import TopNav from './teacher/TopNav';
 import Overview from './teacher/Overview';
+import { AppContext } from '../context/AppContext';
 import MyClasses from './teacher/MyClasses';
 import CalendarView from './teacher/CalendarView';
 import AssignmentsView from './teacher/AssignmentsView';
@@ -25,6 +26,8 @@ const TeacherDashboard = ({ onOpenRoom, onLogout }) => {
       setActiveSection('active-chat');
   };
 
+  const { currentUser } = useContext(AppContext);
+
   const renderSection = () => {
     switch(activeSection) {
       case 'overview': return <Overview setActiveSection={setActiveSection} onOpenRoom={onOpenRoom} />;
@@ -34,7 +37,7 @@ const TeacherDashboard = ({ onOpenRoom, onLogout }) => {
       case 'grading': return <Grading setActiveSection={setActiveSection} />;
       case 'meetings': return <MeetingsView />;
       case 'temp-lab': return <TempLabSession onOpenInternalChat={handleOpenInternalChat} />;
-      case 'active-chat': return <GroupChat subject={activeChatSubject} userName="Prof. Jenkins" userRole="Teacher" onBack={() => setActiveSection('temp-lab')} isEmbedded={true} />;
+      case 'active-chat': return <GroupChat subject={activeChatSubject} userName={currentUser?.fullName || "Prof. Jenkins"} userRole="Teacher" onBack={() => setActiveSection('temp-lab')} isEmbedded={true} />;
       case 'resources': return <ResourceRoom />;
       case 'attendance': return <Attendance />;
       case 'engagement': return <Engagement />;

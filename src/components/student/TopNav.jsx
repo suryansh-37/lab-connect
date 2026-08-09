@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Search, Bell, Settings } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
 
 const TopNav = ({ activeSection, setActiveSection }) => {
+  const { currentUser } = useContext(AppContext);
+  const name = currentUser?.fullName || "Student";
+  const initial = name.charAt(0).toUpperCase();
+
   const topLink = (section, label) => (
     <span onClick={() => setActiveSection(section)} style={{ color: activeSection === section ? '#0284c7' : 'var(--text-muted)', borderBottom: activeSection === section ? '2px solid #0284c7' : '2px solid transparent', paddingBottom: '1rem', marginBottom: '-1rem', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 700 }}>
       {label}
@@ -24,7 +29,7 @@ const TopNav = ({ activeSection, setActiveSection }) => {
         </div>
         <Bell size={20} style={{ color: 'var(--text-muted)', cursor: 'pointer' }} />
         <Settings size={20} style={{ color: 'var(--text-muted)', cursor: 'pointer' }} />
-        <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>A</div>
+        <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{initial}</div>
       </div>
     </div>
   );

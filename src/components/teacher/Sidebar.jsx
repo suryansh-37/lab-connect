@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Home, Calendar, BookOpen, Settings, BarChart2, Video, CheckCircle, Smile, Target, PieChart, Download, BrainCircuit, MessageSquare, LogOut, Beaker, ClipboardList, FolderUp } from 'lucide-react';
 import { teachingLabs } from '../../data/mockData';
+import { AppContext } from '../../context/AppContext';
 
 const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
+  const { currentUser } = useContext(AppContext);
+  const name = currentUser?.fullName || "Prof. Jenkins";
+  const initial = name.charAt(0).toUpperCase();
+
   const navItem = (section, icon, label) => (
     <div onClick={() => setActiveSection(section)} style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', padding: '0.75rem 1rem', cursor: 'pointer', fontWeight: 600, borderRadius: '12px', margin: '0.2rem 1rem', transition: 'all 0.2s', fontSize: '0.9rem', color: activeSection === section ? '#0284c7' : 'var(--text-main)', background: activeSection === section ? '#e0f2fe' : 'transparent' }}>
       {icon} {label}
@@ -15,8 +20,8 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
   return (
     <aside className="dashboard-sidebar" style={{ display: 'flex', flexDirection: 'column', width: '280px', borderRight: '1px solid var(--border)', background: 'var(--bg-card)', padding: '0 0 1rem 0', overflowY: 'auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '2rem 1.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.5rem' }}>
-        <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>S</div>
-        <div><h3 style={{ fontWeight: 700, fontSize: '1rem' }}>Prof. Jenkins</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Instructor Portal</p></div>
+        <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>{initial}</div>
+        <div><h3 style={{ fontWeight: 700, fontSize: '1rem' }}>{name}</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Instructor Portal</p></div>
       </div>
 
       <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

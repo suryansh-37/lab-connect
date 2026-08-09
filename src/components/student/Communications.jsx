@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Edit3, Send, Sparkles, Copy } from 'lucide-react';
+import { AppContext } from '../../context/AppContext';
 
 const formatLine = (line) => {
   const parts = line.split(/(\*\*.*?\*\*|`.*?`)/g);
@@ -31,6 +32,8 @@ const MarkdownLite = ({ text }) => {
 };
 
 const Communications = () => {
+  const { currentUser } = useContext(AppContext);
+  const senderName = currentUser ? `${currentUser.fullName} (${currentUser.role})` : 'Alexander (Student)';
   const [activeChatId, setActiveChatId] = useState('global-stream');
   const [messageInput, setMessageInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -39,7 +42,7 @@ const Communications = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${activeChatId}?sender=Alexander (Student)`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${activeChatId}?sender=${encodeURIComponent(senderName)}`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages);
@@ -105,7 +108,7 @@ const Communications = () => {
 
     const payload = {
       roomId: activeChatId,
-      sender: 'Alexander (Student)',
+      sender: senderName,
       text: messageInput,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -154,7 +157,7 @@ const Communications = () => {
           <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', background: 'var(--bg-main)' }}>
             <AnimatePresence>
               {messages.map((msg) => {
-                const isSelf = msg.sender === 'Alexander (Student)';
+                const isSelf = msg.sender === senderName;
                 return (
                   <motion.div key={msg._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', gap: '1rem', alignSelf: isSelf ? 'flex-end' : 'flex-start', maxWidth: '75%', flexDirection: isSelf ? 'row-reverse' : 'row' }}>
                     <div style={{ background: isSelf ? '#0284c7' : 'var(--bg-card)', color: isSelf ? 'white' : 'var(--text-main)', padding: '1rem 1.25rem', borderRadius: '16px', borderTopLeftRadius: !isSelf ? 0 : '16px', borderTopRightRadius: isSelf ? 0 : '16px', border: isSelf ? 'none' : '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Bell, Settings, Video, CheckCircle, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AppContext } from '../../context/AppContext';
 
 const TopNav = ({ activeSection, setActiveSection, onLogout }) => {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -16,6 +17,10 @@ const TopNav = ({ activeSection, setActiveSection, onLogout }) => {
       {label}
     </span>
   );
+
+  const { currentUser } = useContext(AppContext);
+  const name = currentUser?.fullName || "Teacher";
+  const initial = name.charAt(0).toUpperCase();
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2.5rem', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 9999 }}>
@@ -84,7 +89,7 @@ const TopNav = ({ activeSection, setActiveSection, onLogout }) => {
           </AnimatePresence>
         </div>
 
-        <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 10px rgba(2,132,199,0.3)' }}>T</div>
+        <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 10px rgba(2,132,199,0.3)' }}>{initial}</div>
       </div>
     </div>
   );
