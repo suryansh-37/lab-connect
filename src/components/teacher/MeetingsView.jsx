@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Video, Edit2, AlertTriangle, AlertCircle } from 'lucide-react';
@@ -11,7 +12,7 @@ const MeetingsView = () => {
 
   const fetchMeetings = async () => {
       try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+          const res = await fetch(`${API_BASE_URL}/api/sessions`);
           const data = await res.json();
           if (res.ok) setMeetings(data);
       } catch (err) {
@@ -33,7 +34,7 @@ const MeetingsView = () => {
             // Technically just local array update since backend PUT wasn't built yet, but we will mock update for now
             setMeetings(meetings.map(m => m._id === newMeeting._id ? newMeeting : m));
         } else {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`, {
+            const res = await fetch(`${API_BASE_URL}/api/sessions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...newMeeting, createdBy: 'Class Admin' })
@@ -50,7 +51,7 @@ const MeetingsView = () => {
 
   const handleDelete = async (id) => {
       try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions/${id}`, { method: 'DELETE' });
+          const res = await fetch(`${API_BASE_URL}/api/sessions/${id}`, { method: 'DELETE' });
           if (res.ok) fetchMeetings();
       } catch(e) {
           setErrorMsg("Could not delete from database.");

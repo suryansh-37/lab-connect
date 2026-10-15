@@ -3,14 +3,10 @@ import { Bell, Settings, Video, CheckCircle, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppContext } from '../../context/AppContext';
 
-const TopNav = ({ activeSection, setActiveSection, onLogout }) => {
+const TopNav = ({ activeSection, setActiveSection, onLogout, profileData }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'meet', title: 'Bio 101 Meet Starting', desc: 'Join your active session immediately', time: 'Just now' },
-    { id: 2, type: 'submit', title: 'Elena Vance Submitted', desc: 'Assignment: Lab Report 3', time: '10m ago' },
-    { id: 3, type: 'message', title: 'New Message: Marcus', desc: 'Can you check my final results?', time: '1h ago' }
-  ]);
+  const [notifications, setNotifications] = useState(() => profileData?.notifications || []);
 
   const topLink = (section, label) => (
     <span onClick={() => setActiveSection(section)} style={{ color: activeSection === section ? '#0284c7' : 'var(--text-muted)', borderBottom: activeSection === section ? '2px solid #0284c7' : '2px solid transparent', paddingBottom: '1rem', marginBottom: '-1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
@@ -19,8 +15,8 @@ const TopNav = ({ activeSection, setActiveSection, onLogout }) => {
   );
 
   const { currentUser } = useContext(AppContext);
-  const name = currentUser?.fullName || "Teacher";
-  const initial = name.charAt(0).toUpperCase();
+  const fullName = currentUser?.fullName || profileData?.fullName || 'Teacher';
+  const initial = fullName.charAt(0).toUpperCase();
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2.5rem', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 9999 }}>

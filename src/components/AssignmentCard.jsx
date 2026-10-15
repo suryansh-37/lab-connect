@@ -1,9 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import { AppContext } from '../context/AppContext';
 import { FileText, Clock, Trash2, CheckCircle, Edit, Download, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const AssignmentCard = ({ assignment, role, onEdit }) => {
+const AssignmentCard = ({ assignment, role, onEdit, profileData }) => {
   const { assignments, setAssignments } = useContext(AppContext);
   const [showSubmissions, setShowSubmissions] = useState(false);
   const [submissionData, setSubmissionData] = useState([]);
@@ -12,7 +14,7 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
 
   const fetchSubmissions = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/submissions/${assignment.id || assignment._id}`);
+      const res = await fetch(`${API_BASE_URL}/api/submissions/${assignment.id || assignment._id}`);
       if (res.ok) {
         const data = await res.json();
         setSubmissionData(data);
@@ -35,12 +37,12 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
     reader.onloadend = async () => {
       const payload = {
         assignmentId: assignment._id || assignment.id,
-        studentName: 'Alexander (Student)',
+        studentName: `${profileData?.fullName || 'Student'} (Student)`,
         fileName: file.name,
         fileData: reader.result
       };
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/submissions`, {
+        const res = await fetch(`${API_BASE_URL}/api/submissions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -53,7 +55,17 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
     e.target.value = '';
   };
 
-  const handleDelete = () => setAssignments(assignments.filter(a => a.id !== (assignment.id || assignment._id)));
+  const handleDeleteAssignment = async (assignmentId) => {
+    try {
+      const res = await axios.delete(API_BASE_URL + '/api/assignments/' + assignmentId);
+      if (res.status === 200 || res.status === 204) {
+        setAssignments(prev => prev.filter(a => (a._id || a.id) !== assignmentId));
+      }
+    } catch (err) {
+      console.log('Failed to delete:', err);
+    }
+  };
+
   const handleSubmit = () => setAssignments(assignments.map(a => a.id === (assignment.id || assignment._id) ? { ...a, status: 'Submitted' } : a));
 
   return (
@@ -76,7 +88,7 @@ const AssignmentCard = ({ assignment, role, onEdit }) => {
         {role === 'Teacher' && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button onClick={() => onEdit(assignment)} className="icon-btn" style={{ color: 'var(--accent)' }}><Edit size={18} /></button>
-            <button onClick={handleDelete} className="icon-btn" style={{ color: '#ef4444' }}><Trash2 size={18} /></button>
+            <button onClick={() => handleDeleteAssignment(assignment._id || assignment.id)} className="icon-btn" style={{ color: '#ef4444' }}><Trash2 size={18} /></button>
           </div>
         )}
       </div>

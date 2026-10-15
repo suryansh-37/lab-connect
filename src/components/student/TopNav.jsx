@@ -2,16 +2,10 @@ import React, { useContext } from 'react';
 import { Search, Bell, Settings } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 
-const TopNav = ({ activeSection, setActiveSection }) => {
+const TopNav = ({ activeSection, setActiveSection, profileData }) => {
   const { currentUser } = useContext(AppContext);
-  const name = currentUser?.fullName || "Student";
-  const initial = name.charAt(0).toUpperCase();
-
-  const topLink = (section, label) => (
-    <span onClick={() => setActiveSection(section)} style={{ color: activeSection === section ? '#0284c7' : 'var(--text-muted)', borderBottom: activeSection === section ? '2px solid #0284c7' : '2px solid transparent', paddingBottom: '1rem', marginBottom: '-1rem', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 700 }}>
-      {label}
-    </span>
-  );
+  const displayName = currentUser?.fullName || profileData?.fullName || "Student";
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2.5rem', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 10 }}>

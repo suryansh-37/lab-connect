@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Search, Filter, BookOpen } from 'lucide-react';
 import AssignmentCard from '../AssignmentCard';
 
-const AssignmentsView = () => {
+const AssignmentsView = ({ profileData }) => {
   const [assignments, setAssignments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,7 +14,7 @@ const AssignmentsView = () => {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/assignments`);
+        const res = await fetch(`${API_BASE_URL}/api/assignments`);
         if (res.ok) {
           const data = await res.json();
           setAssignments(data);
@@ -80,7 +81,7 @@ const AssignmentsView = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <AnimatePresence>
             {filtered.map((assignment, idx) => (
-              <AssignmentCard key={assignment._id} assignment={assignment} role="Student" />
+              <AssignmentCard key={assignment._id} assignment={assignment} role="Student" profileData={profileData} />
             ))}
           </AnimatePresence>
         </div>

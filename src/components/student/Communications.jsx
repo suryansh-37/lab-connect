@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Edit3, Send, Sparkles, Copy } from 'lucide-react';
@@ -31,9 +32,10 @@ const MarkdownLite = ({ text }) => {
   );
 };
 
-const Communications = () => {
+const Communications = ({ profileData }) => {
   const { currentUser } = useContext(AppContext);
-  const senderName = currentUser ? `${currentUser.fullName} (${currentUser.role})` : 'Alexander (Student)';
+  const studentName = currentUser?.fullName || profileData?.fullName || 'Student';
+  const senderName = `${studentName} (Student)`;
   const [activeChatId, setActiveChatId] = useState('global-stream');
   const [messageInput, setMessageInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -42,7 +44,7 @@ const Communications = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages/${activeChatId}?sender=${encodeURIComponent(senderName)}`);
+      const res = await fetch(`${API_BASE_URL}/api/messages/${activeChatId}?sender=${encodeURIComponent(senderName)}`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages);
@@ -56,7 +58,7 @@ const Communications = () => {
 
   const fetchChatRooms = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions`);
+      const res = await fetch(`${API_BASE_URL}/api/sessions`);
       if (res.ok) {
         const data = await res.json();
         setChatRooms(Array.isArray(data) ? data.filter(s => s.isTempChat) : []);
@@ -114,7 +116,7 @@ const Communications = () => {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/messages`, {
+      const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

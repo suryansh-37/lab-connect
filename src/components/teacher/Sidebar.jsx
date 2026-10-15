@@ -4,10 +4,10 @@ import { Home, Calendar, BookOpen, Settings, BarChart2, Video, CheckCircle, Smil
 import { teachingLabs } from '../../data/mockData';
 import { AppContext } from '../../context/AppContext';
 
-const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
+const Sidebar = ({ activeSection, setActiveSection, onLogout, profileData }) => {
   const { currentUser } = useContext(AppContext);
-  const name = currentUser?.fullName || "Prof. Jenkins";
-  const initial = name.charAt(0).toUpperCase();
+  const fullName = currentUser?.fullName || profileData?.fullName || "Prof. Jenkins";
+  const initial = fullName.charAt(0).toUpperCase();
 
   const navItem = (section, icon, label) => (
     <div onClick={() => setActiveSection(section)} style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', padding: '0.75rem 1rem', cursor: 'pointer', fontWeight: 600, borderRadius: '12px', margin: '0.2rem 1rem', transition: 'all 0.2s', fontSize: '0.9rem', color: activeSection === section ? '#0284c7' : 'var(--text-main)', background: activeSection === section ? '#e0f2fe' : 'transparent' }}>
@@ -21,7 +21,7 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
     <aside className="dashboard-sidebar" style={{ display: 'flex', flexDirection: 'column', width: '280px', borderRight: '1px solid var(--border)', background: 'var(--bg-card)', padding: '0 0 1rem 0', overflowY: 'auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '2rem 1.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.5rem' }}>
         <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0284c7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>{initial}</div>
-        <div><h3 style={{ fontWeight: 700, fontSize: '1rem' }}>{name}</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Instructor Portal</p></div>
+        <div><h3 style={{ fontWeight: 700, fontSize: '1rem' }}>{fullName}</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Instructor Portal</p></div>
       </div>
 
       <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -46,7 +46,10 @@ const Sidebar = ({ activeSection, setActiveSection, onLogout }) => {
         {navItem('ai-assistant', <BrainCircuit size={18} />, 'AI Assistant')}
         {navItem('communications', <MessageSquare size={18} />, 'Communications')}
       </nav>
-      
+
+      <div style={{ padding: '0 1rem', marginTop: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+        <motion.button onClick={(e) => { e.preventDefault(); onLogout(); }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: '0.75rem 1rem', width: '100%', borderRadius: '12px' }} whileHover={{ backgroundColor: 'var(--bg-main)' }} whileTap={{ scale: 0.95 }}><LogOut size={18} /> Logout</motion.button>
+      </div>
     </aside>
   );
 };

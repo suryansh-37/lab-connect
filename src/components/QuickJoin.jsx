@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { User, LogIn, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -36,7 +37,7 @@ const QuickJoin = ({ onJoin, onBack }) => {
       setIsJoining(true);
       setErrorMsg('');
       try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sessions/join/${fullOtp}`);
+          const res = await fetch(`${API_BASE_URL}/api/sessions/join/${fullOtp}`);
           const data = await res.json();
           if (!res.ok) {
               setErrorMsg(data.message);

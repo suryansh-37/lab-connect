@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { motion } from 'framer-motion';
 import { PopCard, containerVariants } from '../ui/PopCard';
 import { Folder, MoreVertical, FileText, Video, UploadCloud, SlidersHorizontal, Grid, Plus } from 'lucide-react';
@@ -10,7 +11,7 @@ const ResourceLibrary = () => {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resources`);
+        const res = await fetch(`${API_BASE_URL}/api/resources`);
         if (res.ok) {
           const data = await res.json();
           setResources(data);
