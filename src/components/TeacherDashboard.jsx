@@ -22,6 +22,8 @@ import GroupChat from './GroupChat';
 const TeacherDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser } = useContext(AppContext);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(() => {
     if (window.location.pathname.startsWith('/teacher-dashboard/')) {
       const section = window.location.pathname.split('/teacher-dashboard/')[1];
@@ -110,8 +112,6 @@ const TeacherDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
       setActiveSection('active-chat');
   };
 
-  const { currentUser } = useContext(AppContext);
-
   const renderSection = () => {
     switch(activeSection) {
       case 'overview': return <Overview setActiveSection={setActiveSection} onOpenRoom={onOpenRoom} profileData={profileData} />;
@@ -133,8 +133,6 @@ const TeacherDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
       default: return <Overview setActiveSection={setActiveSection} onOpenRoom={onOpenRoom} profileData={profileData} />;
     }
   };
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', position: 'relative' }}>

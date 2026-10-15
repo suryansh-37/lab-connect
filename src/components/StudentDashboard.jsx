@@ -17,6 +17,7 @@ const StudentDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -83,8 +84,6 @@ const StudentDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
       default: return <Overview setActiveSection={setActiveSection} onOpenRoom={onOpenRoom} profileData={profileData} />;
     }
   };
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg-main)', position: 'relative' }}>
