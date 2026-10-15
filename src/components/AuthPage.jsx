@@ -136,7 +136,7 @@ const AuthPage = ({ role, onBack, onLoginSuccess }) => {
             )}
 
             <motion.button type="submit" className="btn primary-btn full-width" variants={itemVariants} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }} disabled={isLoading}>
-              {isLoading ? 'Connecting to Servers...' : isLogin ? 'Sign In Directly' : 'Create Account'}
+              {isLoading ? 'logging in' : isLogin ? 'Sign In Directly' : 'Create Account'}
             </motion.button>
           </form>
 
