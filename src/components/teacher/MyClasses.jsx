@@ -79,14 +79,14 @@ const MyClasses = () => {
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: 0 }}>My Classes</h1>
-          <p style={{ color: 'var(--text-muted)', marginTop: '0.4rem' }}>Manage your active streams, course rosters, and student registration.</p>
+          <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)', fontWeight: 800, margin: 0 }}>My Classes</h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.4rem', fontSize: 'clamp(0.9rem, 2vw, 1rem)' }}>Manage your active streams, course rosters, and student registration.</p>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr', gap: '2.5rem' }}>
+      <div className="responsive-grid-split-wide">
         <div>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
@@ -101,7 +101,7 @@ const MyClasses = () => {
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '380px', lineHeight: '1.6', marginBottom: '1.5rem' }}>Start your first stream by clicking 'Create New Course' in the Quick Actions panel.</p>
             </PopCard>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="responsive-grid-2">
               {classes.map((cls, idx) => {
                 const bannerUrl = bannerImages[idx % bannerImages.length];
                 const studentCount = cls.enrolledStudents?.length || 0;

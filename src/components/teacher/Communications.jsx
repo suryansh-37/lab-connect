@@ -107,11 +107,11 @@ const Communications = ({ profileData }) => {
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', minHeight: 0, maxHeight: '100%' }}>
-      <PopCard style={{ padding: 0, display: 'flex', flexDirection: 'row', flex: 1, minHeight: 0, maxHeight: '100%', minWidth: 0, width: '100%', overflow: 'hidden', background: '#f8fafc', border: 'none', borderRadius: 0 }}>
+      <PopCard className="communications-layout" style={{ padding: 0, flex: 1, minHeight: 0, maxHeight: '100%', minWidth: 0, width: '100%', overflow: 'hidden', background: '#f8fafc', border: 'none', borderRadius: 0 }}>
         
         {/* Inbox List */}
-        <div style={{ width: 'clamp(260px, 30%, 350px)', height: '100%', flexShrink: 0, borderRight: '1px solid var(--border)', background: 'white', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><h2 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Inbox</h2><button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0284c7', background: 'none', border: 'none', fontWeight: 700, cursor: 'pointer' }}><Edit3 size={16}/> Compose</button></div>
+        <div className="communications-inbox">
+          <div style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><h2 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Inbox</h2><button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0284c7', background: 'none', border: 'none', fontWeight: 700, cursor: 'pointer' }}><Edit3 size={16}/> Compose</button></div>
           <div style={{ overflowY: 'auto', flex: 1, paddingBottom: '1rem' }}>
             <div onClick={() => setActiveChatId('global-stream')} style={{ padding: '1.25rem 1.5rem', background: activeChatId === 'global-stream' ? '#f0f9ff' : 'transparent', borderLeft: activeChatId === 'global-stream' ? '4px solid #0284c7' : '4px solid transparent', display: 'flex', gap: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
               <div style={{ position: 'relative' }}><div style={{ width: '45px', height: '45px', borderRadius: '12px', background: '#86efac', color: '#14532d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Beaker size={24}/></div></div>
@@ -127,7 +127,7 @@ const Communications = ({ profileData }) => {
         </div>
 
         {/* Chat Area */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'white', minWidth: 0, minHeight: 0, maxHeight: '100%' }}>
+        <div className="communications-main">
           <div style={{ padding: '1.25rem 2rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', zIndex: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.02)', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: activeChatId === 'global-stream' ? '#86efac' : '#e0f2fe', color: activeChatId === 'global-stream' ? '#14532d' : '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>

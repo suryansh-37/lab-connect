@@ -107,7 +107,7 @@ const QuickJoin = ({ onJoin, onBack }) => {
 
           <div className="input-group" style={{ marginTop: '1rem' }}>
             <label>Room Code (OTP)</label>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: 'clamp(4px, 2vw, 10px)', justifyContent: 'center', marginTop: '0.5rem', width: '100%' }}>
               {otp.map((digit, index) => (
                 <motion.input
                   key={index}
@@ -120,12 +120,12 @@ const QuickJoin = ({ onJoin, onBack }) => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: index * 0.1, type: 'spring' }}
-                  whileFocus={{ scale: 1.1, borderColor: 'var(--accent)' }}
+                  whileFocus={{ scale: 1.05, borderColor: 'var(--accent)' }}
                   style={{
-                    width: '45px',
-                    height: '55px',
+                    width: 'clamp(36px, 12vw, 48px)',
+                    height: 'clamp(46px, 14vw, 56px)',
                     textAlign: 'center',
-                    fontSize: '1.5rem',
+                    fontSize: 'clamp(1.1rem, 4vw, 1.5rem)',
                     fontWeight: 'bold',
                     borderRadius: '8px',
                     border: '1px solid var(--border)',

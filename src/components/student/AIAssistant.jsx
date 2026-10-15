@@ -140,15 +140,15 @@ const AIAssistant = () => {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <h1 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 800, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Bot size={32} color="#8b5cf6" /> AI Study Assistant
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Your personal tutor — ask questions, get explanations, and get help with assignments.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Your personal tutor — ask questions, get explanations, and get help with assignments.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem' }}>
+      <div className="responsive-grid-split">
         {/* Chat Area */}
-        <PopCard style={{ display: 'flex', flexDirection: 'column', height: '65vh', padding: 0, overflow: 'hidden' }}>
+        <PopCard style={{ display: 'flex', flexDirection: 'column', minHeight: '450px', height: '65vh', padding: 0, overflow: 'hidden' }}>
           {/* Chat header */}
           <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>

@@ -44,17 +44,17 @@ const ResourceLibrary = () => {
     <motion.div variants={containerVariants} initial="hidden" animate="show">
       <div style={{ marginBottom: '2.5rem' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Library / <span style={{ color: '#0284c7' }}>Course Folders</span></p>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Academic Modules</h1>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+        <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)' }}>Academic Modules</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>Access and organize your curated subject resources.</p>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <button style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '0.6rem 1.2rem', borderRadius: '20px', fontWeight: 600, cursor: 'pointer' }}><SlidersHorizontal size={16}/> Filter</button>
             <button style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '0.6rem 1.2rem', borderRadius: '20px', fontWeight: 600, cursor: 'pointer' }}><Grid size={16}/> Layout</button>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+      <div className="responsive-grid-cards" style={{ marginBottom: '3rem' }}>
         {folders.map((folder, idx) => (
           <PopCard key={idx} style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
@@ -71,7 +71,7 @@ const ResourceLibrary = () => {
       </div>
 
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)' }}>Shared Resources ({resources.length})</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -83,12 +83,12 @@ const ResourceLibrary = () => {
                <p style={{ color: 'var(--text-muted)' }}>No shared resources available at the moment.</p>
             </div>
           ) : resources.map((file, idx) => (
-            <PopCard key={file._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', background: 'var(--bg-main)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                <div style={{ background: '#3b82f615', padding: '0.8rem', borderRadius: '12px' }}><FileText size={20} color="#3b82f6"/></div>
+            <PopCard key={file._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', background: 'var(--bg-main)', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: '220px', flex: 1 }}>
+                <div style={{ background: '#3b82f615', padding: '0.8rem', borderRadius: '12px', flexShrink: 0 }}><FileText size={20} color="#3b82f6"/></div>
                 <div><h4 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{file.title}</h4><span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{file.description}</span></div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <span style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '0.3rem 0.8rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>{file.classGroup}</span>
                 <a href={file.url} target="_blank" rel="noreferrer" style={{ background: '#0284c7', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }}>Open Link</a>
               </div>

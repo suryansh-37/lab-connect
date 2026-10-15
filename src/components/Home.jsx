@@ -82,31 +82,31 @@ const Home = ({ onNavigate }) => {
         }}
       >
         {/* === HERO SECTION === */}
-        <div style={{ marginTop: '12vh', textAlign: 'center', padding: '0 1rem' }}>
+        <div style={{ marginTop: 'clamp(4vh, 7vh, 10vh)', textAlign: 'center', padding: '0 1rem' }}>
           <motion.h2 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }}
-            style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--text-main)' }}
+            style={{ fontSize: 'clamp(1.85rem, 5vw, 3rem)', fontWeight: '800', marginBottom: '1rem', color: 'var(--text-main)', lineHeight: 1.2 }}
           >
             Welcome to <span style={{ color: 'var(--accent)' }}>Lab-Connect</span>
           </motion.h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '3rem' }}>The frictionless virtual learning environment.</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: '2.5rem' }}>The frictionless virtual learning environment.</p>
         </div>
         
         {/* PORTAL SELECTION */}
-        <div style={{ display: 'flex', gap: '2rem', perspective: '1000px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem', padding: '0 1rem' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', perspective: '1000px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '3rem', padding: '0 1rem', width: '100%' }}>
           <motion.button 
             className="glass-panel"
             onClick={() => onNavigate('student-auth')}
             whileHover={{ scale: 1.05, translateY: -5, boxShadow: "0px 20px 40px rgba(0, 0, 0, 0.1)" }}
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
-            style={{ padding: '3rem 2rem', width: '320px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', color: 'var(--text-main)' }}
+            style={{ padding: '2.5rem 1.5rem', width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', color: 'var(--text-main)' }}
           >
-            <div style={{ background: 'rgba(41, 128, 185, 0.1)', color: 'var(--accent)', padding: '1.5rem', borderRadius: '50%', marginBottom: '1.5rem' }}>
-              <User size={32} />
+            <div style={{ background: 'rgba(41, 128, 185, 0.1)', color: 'var(--accent)', padding: '1.25rem', borderRadius: '50%', marginBottom: '1.25rem' }}>
+              <User size={30} />
             </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Student Portal</h3>
-            <p style={{ color: 'var(--text-muted)' }}>Access your labs, join sessions, and collaborate effortlessly.</p>
+            <h3 style={{ fontSize: '1.4rem', marginBottom: '0.75rem' }}>Student Portal</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Access your labs, join sessions, and collaborate effortlessly.</p>
           </motion.button>
 
           <motion.button 
@@ -115,19 +115,19 @@ const Home = ({ onNavigate }) => {
             whileHover={{ scale: 1.05, translateY: -5, boxShadow: "0px 20px 40px rgba(0, 0, 0, 0.1)" }}
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
-            style={{ padding: '3rem 2rem', width: '320px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', color: 'var(--text-main)' }}
+            style={{ padding: '2.5rem 1.5rem', width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', color: 'var(--text-main)' }}
           >
-            <div style={{ background: 'rgba(41, 128, 185, 0.1)', color: 'var(--accent)', padding: '1.5rem', borderRadius: '50%', marginBottom: '1.5rem' }}>
-              <BookOpen size={32} />
+            <div style={{ background: 'rgba(41, 128, 185, 0.1)', color: 'var(--accent)', padding: '1.25rem', borderRadius: '50%', marginBottom: '1.25rem' }}>
+              <BookOpen size={30} />
             </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Teacher Portal</h3>
-            <p style={{ color: 'var(--text-muted)' }}>Manage workspaces, host streams, and create interactive sessions.</p>
+            <h3 style={{ fontSize: '1.4rem', marginBottom: '0.75rem' }}>Teacher Portal</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Manage workspaces, host streams, and create interactive sessions.</p>
           </motion.button>
         </div>
 
         {/* === SECTION: HOW IT WORKS === */}
-        <div style={{ padding: '5rem 2rem', width: '100%', maxWidth: '1200px' }}>
-          <h3 style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '3rem', fontWeight: '700' }}>How It Works</h3>
+        <div style={{ padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem)', width: '100%', maxWidth: '1200px' }}>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', textAlign: 'center', marginBottom: '2.5rem', fontWeight: '700' }}>How It Works</h3>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             {[
               { num: '1', title: 'Select Portal', desc: 'Log in instantly as a student or a teacher.' },
@@ -140,41 +140,41 @@ const Home = ({ onNavigate }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                style={{ flex: '1', minWidth: '250px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                style={{ flex: '1 1 240px', maxWidth: '340px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
               >
-                <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'var(--accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.35rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                   {step.num}
                 </div>
-                <h4 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{step.title}</h4>
-                <p style={{ color: 'var(--text-muted)' }}>{step.desc}</p>
+                <h4 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>{step.title}</h4>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{step.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
 
         {/* === SECTION: FEATURES OVERVIEW === */}
-        <div style={{ padding: '5rem 2rem', width: '100%', maxWidth: '1200px' }}>
-          <h3 style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '3rem', fontWeight: '700' }}>Powerful Features</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+        <div style={{ padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem)', width: '100%', maxWidth: '1200px' }}>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', textAlign: 'center', marginBottom: '2.5rem', fontWeight: '700' }}>Powerful Features</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
             
             {[
-              { icon: <ShieldCheck size={40}/>, title: 'Zero-Login Security', desc: 'No complex sign-ups. Connect safely within a localized encrypted session ensuring absolute privacy.' },
-              { icon: <Video size={40}/>, title: 'HD Video Conferencing', desc: 'Smooth, integrated video rooms. See everyone clearly without needing external apps.' },
-              { icon: <Cast size={40}/>, title: 'Live Class Streams', desc: 'Broadcast lessons effectively directly to all participating students with dynamic streams.' },
-              { icon: <MessageCircle size={40}/>, title: 'Real-Time Chat', desc: 'Dedicated groups and private messaging for easy peer-to-peer communication.' },
-              { icon: <MailCheck size={40}/>, title: 'Direct Inbox Resources', desc: 'Instructors can push materials and documents seamlessly direct to participant accounts.' },
-              { icon: <Presentation size={40}/>, title: 'Interactive Dashboard', desc: 'Manage assignments, subjects, and schedules directly inside dynamic 3D-styled boards.' }
+              { icon: <ShieldCheck size={36}/>, title: 'Zero-Login Security', desc: 'No complex sign-ups. Connect safely within a localized encrypted session ensuring absolute privacy.' },
+              { icon: <Video size={36}/>, title: 'HD Video Conferencing', desc: 'Smooth, integrated video rooms. See everyone clearly without needing external apps.' },
+              { icon: <Cast size={36}/>, title: 'Live Class Streams', desc: 'Broadcast lessons effectively directly to all participating students with dynamic streams.' },
+              { icon: <MessageCircle size={36}/>, title: 'Real-Time Chat', desc: 'Dedicated groups and private messaging for easy peer-to-peer communication.' },
+              { icon: <MailCheck size={36}/>, title: 'Direct Inbox Resources', desc: 'Instructors can push materials and documents seamlessly direct to participant accounts.' },
+              { icon: <Presentation size={36}/>, title: 'Interactive Dashboard', desc: 'Manage assignments, subjects, and schedules directly inside dynamic 3D-styled boards.' }
             ].map((feat, idx) => (
               <motion.div
                 key={idx}
                 className="glass-panel"
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (idx % 3) * 0.1 }}
                 whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)" }}
-                style={{ padding: '2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                style={{ padding: '1.75rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
               >
                 <div style={{ color: 'var(--accent)', marginBottom: '1rem' }}>{feat.icon}</div>
-                <h4 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{feat.title}</h4>
-                <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{feat.desc}</p>
+                <h4 style={{ fontSize: '1.15rem', marginBottom: '0.75rem' }}>{feat.title}</h4>
+                <p style={{ color: 'var(--text-muted)', lineHeight: '1.5', fontSize: '0.9rem' }}>{feat.desc}</p>
               </motion.div>
             ))}
             

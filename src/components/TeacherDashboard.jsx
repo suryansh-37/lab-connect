@@ -134,15 +134,34 @@ const TeacherDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
     }
   };
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} onLogout={onLogout} profileData={profileData} />
+    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', position: 'relative' }}>
+      <div 
+        className={`sidebar-backdrop ${isSidebarOpen ? 'active' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)} 
+      />
+      <Sidebar 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection} 
+        onLogout={onLogout} 
+        profileData={profileData} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
       
       <main className="dashboard-main" style={{ flex: 1, minHeight: 0, padding: '0', background: 'var(--bg-main)', overflowY: (activeSection === 'communications' || activeSection === 'active-chat') ? 'hidden' : 'auto', display: 'flex', flexDirection: 'column' }}>
-        <TopNav activeSection={activeSection} setActiveSection={setActiveSection} onLogout={onLogout} profileData={profileData} />
+        <TopNav 
+          activeSection={activeSection} 
+          setActiveSection={setActiveSection} 
+          onLogout={onLogout} 
+          profileData={profileData} 
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
         
         <div style={{ 
-          padding: (activeSection === 'communications' || activeSection === 'active-chat') ? '0' : '2.5rem 2.5rem 6rem 2.5rem', 
+          padding: (activeSection === 'communications' || activeSection === 'active-chat') ? '0' : 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem) 6rem clamp(1rem, 3vw, 2.5rem)', 
           maxWidth: (activeSection === 'communications' || activeSection === 'active-chat') ? '100%' : '1400px', 
           margin: '0 auto',
           width: '100%',

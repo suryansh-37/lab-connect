@@ -132,14 +132,14 @@ const Communications = ({ profileData }) => {
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ height: 'calc(100vh - 200px)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Scholar Stream Inbox</h1>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ minHeight: '500px', height: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <h1 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>Scholar Stream Inbox</h1>
       </div>
       
-      <PopCard style={{ padding: 0, display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg-main)' }}>
-        <div style={{ width: '320px', borderRight: '1px solid var(--border)', background: 'var(--bg-card)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Inbox</h2><button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0284c7', background: 'none', border: 'none', fontWeight: 700, cursor: 'pointer' }}><Edit3 size={16}/> Compose</button></div>
+      <PopCard className="communications-layout" style={{ padding: 0, overflow: 'hidden', background: 'var(--bg-main)', flex: 1, minHeight: '520px' }}>
+        <div className="communications-inbox">
+          <div style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Inbox</h2><button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0284c7', background: 'none', border: 'none', fontWeight: 700, cursor: 'pointer' }}><Edit3 size={16}/> Compose</button></div>
           <div style={{ overflowY: 'auto', flex: 1, paddingBottom: '1rem' }}>
             <div onClick={() => setActiveChatId('global-stream')} style={{ padding: '1.25rem 1.5rem', background: activeChatId === 'global-stream' ? 'rgba(2, 132, 199, 0.1)' : 'transparent', borderLeft: activeChatId === 'global-stream' ? '4px solid #0284c7' : '4px solid transparent', display: 'flex', gap: '1rem', cursor: 'pointer' }}>
               <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>GS</div>
@@ -154,7 +154,7 @@ const Communications = ({ profileData }) => {
           </div>
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-card)' }}>
+        <div className="communications-main">
           <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}><h4 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-main)' }}>{activeChatId === 'global-stream' ? 'Global Stream' : activeChatId}</h4></div>
           <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', background: 'var(--bg-main)' }}>
             <AnimatePresence>

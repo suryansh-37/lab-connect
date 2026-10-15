@@ -55,12 +55,12 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
 
   return (
   <motion.div variants={containerVariants} initial="hidden" animate="show">
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+        <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
           Welcome back, {fullName}
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'clamp(0.95rem, 2vw, 1.05rem)' }}>
           You have {assignmentsToGrade} assignments to grade and {classesTodayCount} classes today.
         </p>
       </div>
@@ -71,7 +71,7 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
       )}
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+    <div className="responsive-grid-3" style={{ marginBottom: '2.5rem' }}>
       <PopCard>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>Avg Attendance</p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
@@ -95,10 +95,10 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
       </PopCard>
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2.5rem' }}>
+    <div className="responsive-grid-split" style={{ gap: '2.5rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
         <motion.div variants={containerVariants}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>Active Classes</h2>
             <span onClick={() => setActiveSection('my-classes')} style={{ color: '#0284c7', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>
               View All &rarr;
@@ -171,7 +171,7 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
               </button>
             </PopCard>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="responsive-grid-2">
               {(classes || []).map((cls, idx) => {
                 const bannerUrl = bannerImages[idx % bannerImages.length];
                 const studentCount = cls?.enrolledStudents?.length || 0;

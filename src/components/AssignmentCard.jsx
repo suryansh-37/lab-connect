@@ -69,13 +69,13 @@ const AssignmentCard = ({ assignment, role, onEdit, profileData }) => {
   const handleSubmit = () => setAssignments(assignments.map(a => a.id === (assignment.id || assignment._id) ? { ...a, status: 'Submitted' } : a));
 
   return (
-    <motion.div className="auth-card" style={{ padding: '1.5rem', marginBottom: '1rem' }} whileHover={{ y: -4 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ background: 'rgba(41, 128, 185, 0.1)', padding: '0.75rem', borderRadius: '50%', color: 'var(--accent)' }}><FileText size={20} /></div>
+    <motion.div className="auth-card" style={{ padding: 'clamp(1rem, 2.5vw, 1.5rem)', marginBottom: '1rem' }} whileHover={{ y: -4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ background: 'rgba(41, 128, 185, 0.1)', padding: '0.75rem', borderRadius: '50%', color: 'var(--accent)', flexShrink: 0 }}><FileText size={20} /></div>
           <div>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{assignment.title}</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{assignment.lab || assignment.className}</span>
               {assignment.fileData && (
                 <a href={assignment.fileData} download={assignment.fileName || 'Assignment.pdf'} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: '#0284c7', textDecoration: 'none', fontWeight: 700 }}>
@@ -95,10 +95,10 @@ const AssignmentCard = ({ assignment, role, onEdit, profileData }) => {
       
       <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '1rem 0' }}>{assignment.description}</p>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Clock size={16} /> Due: {assignment.dueDate}</span>
         {role === 'Student' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {submittedFile ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontWeight: 600, fontSize: '0.85rem' }}>
                 <CheckCircle size={16} /> Submitted: {submittedFile}
@@ -126,7 +126,7 @@ const AssignmentCard = ({ assignment, role, onEdit, profileData }) => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {submissionData.map((sub, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: 'var(--bg-main)', borderRadius: '8px', fontSize: '0.85rem' }}>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: 'var(--bg-main)', borderRadius: '8px', fontSize: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{sub.studentName}</span>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>({sub.fileName})</span>

@@ -14,16 +14,16 @@ const CalendarView = () => (
     </div>
 
     {/* Calendar Grid Container */}
-    <motion.div variants={cardVariants} style={{ background: 'var(--bg-card)', padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+    <motion.div variants={cardVariants} className="calendar-card">
       {/* Days of the Week Header */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', gap: '1rem', marginBottom: '1.5rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+      <div className="calendar-grid" style={{ marginBottom: '1.25rem' }}>
         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
-          <span key={day} style={{ fontSize: '0.85rem' }}>{day}</span>
+          <span key={day} className="calendar-day-header">{day}</span>
         ))}
       </div>
       
       {/* Calendar Days */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1rem', textAlign: 'center' }}>
+      <div className="calendar-grid">
         {[...Array(31)].map((_, i) => { 
           const day = i + 1; 
           const isToday = day === 4; 
@@ -33,13 +33,13 @@ const CalendarView = () => (
           return ( 
             <motion.div 
               key={day} 
-              whileHover={{ scale: 1.05, background: 'var(--bg-main)' }} 
-              style={{ minHeight: '90px', padding: '1.5rem 0', borderRadius: '16px', border: isToday ? '2px solid var(--accent)' : '1px solid var(--border)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+              whileHover={{ scale: 1.04, background: 'var(--bg-main)' }} 
+              className={`calendar-day-cell ${isToday ? 'today' : ''}`}
             >
-              <span style={{ fontSize: '1.5rem', fontWeight: 700, color: isToday ? 'var(--accent)' : 'var(--text-main)' }}>{day}</span>
+              <span className="calendar-day-num" style={{ color: isToday ? 'var(--accent)' : 'var(--text-main)' }}>{day}</span>
               
               {/* Event Indicators (Dots) */}
-              <div style={{ display: 'flex', gap: '6px', marginTop: '8px', height: '6px' }}>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '6px', height: '6px' }}>
                 {hasDeadline && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444' }}></div>}
                 {hasMeeting && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)' }}></div>}
               </div>

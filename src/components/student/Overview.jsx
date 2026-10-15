@@ -115,15 +115,15 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
           Welcome back, {fullName}
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', fontStyle: 'italic' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', fontStyle: 'italic' }}>
           "The mind is not a vessel to be filled, but a fire to be kindled."
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div className="responsive-grid-stats" style={{ marginBottom: '2.5rem' }}>
         <PopCard style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
             <Award size={18} />
@@ -145,12 +145,12 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
             {credits} <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ {totalCreditsGoal}</span>
           </span>
         </PopCard>
-        <PopCard style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <PopCard style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>
               Weekly Study Goal
             </span>
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', margin: '0.5rem 0' }}>
+            <div style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: 'var(--text-main)', margin: '0.5rem 0' }}>
               {weeklyStudyProgress} / {weeklyStudyGoal} Hours
             </div>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
@@ -171,6 +171,7 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
               justifyContent: 'center',
               fontWeight: 'bold',
               color: 'var(--text-main)',
+              flexShrink: 0
             }}
           >
             {weeklyStudyGoal > 0 ? `${Math.round((weeklyStudyProgress / weeklyStudyGoal) * 100)}%` : '0%'}
@@ -178,10 +179,10 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
         </PopCard>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2.5rem' }}>
+      <div className="responsive-grid-split" style={{ gap: '2.5rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
           <motion.div variants={containerVariants}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>Enrolled Courses</h2>
               <span
                 onClick={() => setActiveSection('library')}
@@ -232,7 +233,7 @@ const Overview = ({ setActiveSection, onOpenRoom, profileData }) => {
                 </p>
               </PopCard>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="responsive-grid-2">
                 {(courses || []).map((lab, idx) => {
                   const bannerUrl = bannerImages[idx % bannerImages.length];
                   return (

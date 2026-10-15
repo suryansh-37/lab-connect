@@ -44,8 +44,8 @@ const AttendanceInsights = () => {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show">
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Student Attendance Overview</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Monitoring your academic presence and engagement metrics.</p>
+        <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Student Attendance Overview</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)' }}>Monitoring your academic presence and engagement metrics.</p>
       </div>
 
       {isLoading ? (
@@ -53,10 +53,10 @@ const AttendanceInsights = () => {
           <div style={{ width: '2rem', height: '2rem', border: '3px solid var(--border)', borderTopColor: '#0284c7', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2.5rem' }}>
+        <div className="responsive-grid-split" style={{ gap: '2.5rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             <PopCard style={{ background: 'var(--bg-card)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>Academic Presence</span>
                   <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', margin: '0.2rem 0 0 0' }}>Weekly Engagement Flow</h3>
@@ -65,7 +65,7 @@ const AttendanceInsights = () => {
                   {classes.length > 0 ? `${totalParticipation}% Consistent` : '100% Consistent'}
                 </span>
               </div>
-              <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 2rem', position: 'relative' }}>
+              <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 clamp(0.5rem, 2vw, 2rem)', position: 'relative' }}>
                 <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: '100%', height: '100%', opacity: 0.2, stroke: '#0284c7', strokeWidth: 1, fill: 'none', position: 'absolute', left: 0, bottom: 0 }}><path d="M0 30 Q 20 10, 40 25 T 80 15 T 100 5" /></svg>
                 {/* Visual Placeholder for Graph Bars */}
                 {[92, 95, 88, 98, 100, 0, 0].map((val, idx) => (

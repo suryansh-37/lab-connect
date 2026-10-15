@@ -66,7 +66,7 @@ const MeetingsView = () => {
 
       {errorMsg && <div style={{ background: '#fee2e2', color: '#ef4444', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}><AlertCircle size={18}/> {errorMsg}</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.3fr', gap: '2rem' }}>
+      <div className="responsive-grid-split">
         
         {/* CREATE PORTAL */}
         <PopCard style={{ height: 'fit-content' }}>
@@ -81,9 +81,9 @@ const MeetingsView = () => {
                <option value="Chem 201 - Advanced">Chem 201 - Advanced</option>
              </select>
 
-             <div style={{ display: 'flex', gap: '1rem'}}>
-               <input type="date" value={newMeeting.date} onChange={e => setNewMeeting({...newMeeting, date: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', flex: 1 }} required />
-               <input type="time" value={newMeeting.time} onChange={e => setNewMeeting({...newMeeting, time: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', flex: 1 }} required />
+             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+               <input type="date" value={newMeeting.date} onChange={e => setNewMeeting({...newMeeting, date: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', flex: 1, minWidth: '130px' }} required />
+               <input type="time" value={newMeeting.time} onChange={e => setNewMeeting({...newMeeting, time: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', flex: 1, minWidth: '130px' }} required />
              </div>
              
              <input type="url" placeholder="Direct Zoom/Meet Link" value={newMeeting.link} onChange={e => setNewMeeting({...newMeeting, link: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
@@ -99,8 +99,8 @@ const MeetingsView = () => {
           ) : (
              <AnimatePresence>
                {meetings.filter(m => !m.isTempChat).map(m => (
-                 <PopCard key={m._id} style={{ display: 'flex', padding: '1.5rem', justifyContent: 'space-between', alignItems: 'center' }} exit={{opacity: 0, x: 20}}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                 <PopCard key={m._id} style={{ display: 'flex', padding: '1.5rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }} exit={{opacity: 0, x: 20}}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                        <div style={{ background: '#e0f2fe', padding: '1rem', borderRadius: '12px', color: '#0284c7', flexShrink: 0 }}><Video size={24}/></div>
                        <div>
                            <h4 style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.4rem' }}>{m.title}</h4>
@@ -112,7 +112,7 @@ const MeetingsView = () => {
                            </div>
                        </div>
                    </div>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                        <a href={m.link} target="_blank" rel="noopener noreferrer" className="btn primary-btn" style={{ fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>Join Live</a>
                        <button onClick={() => setNewMeeting(m)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}><Edit2 size={18}/></button>
                        <button onClick={() => handleDelete(m._id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}><AlertTriangle size={18}/></button>

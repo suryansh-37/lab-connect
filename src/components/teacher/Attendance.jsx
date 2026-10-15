@@ -94,7 +94,7 @@ const Attendance = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <h2 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800 }}>Mark Daily Attendance</h2>
           
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '0.4rem 0.8rem', borderRadius: '8px' }}>
               <CalendarIcon size={16} color="var(--text-muted)" />
               <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', color: 'var(--text-main)', fontWeight: 600 }} />
@@ -140,7 +140,7 @@ const Attendance = () => {
           </div>
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
               <button onClick={() => markAllAs('present')} style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}>Mark All Present</button>
               <button onClick={() => markAllAs('absent')} style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}>Mark All Absent</button>
             </div>
@@ -155,7 +155,7 @@ const Attendance = () => {
                   <div 
                     key={studentId} 
                     style={{ 
-                      padding: '1rem 1.5rem', 
+                      padding: '1rem 1.25rem', 
                       border: '1px solid', 
                       borderColor: status === 'present' ? '#a7f3d0' : status === 'absent' ? '#fecaca' : 'var(--border)', 
                       borderRadius: '12px', 
@@ -164,14 +164,16 @@ const Attendance = () => {
                       alignItems: 'center', 
                       background: status === 'present' ? '#f0fdf4' : status === 'absent' ? '#fef2f2' : 'var(--bg-main)', 
                       transition: 'all 0.2s', 
-                      boxShadow: status ? '0 4px 10px rgba(0,0,0,0.02)' : 'none' 
+                      boxShadow: status ? '0 4px 10px rgba(0,0,0,0.02)' : 'none',
+                      flexWrap: 'wrap',
+                      gap: '0.75rem'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: '180px' }}>
                       <User size={20} color={status === 'present' ? '#10b981' : status === 'absent' ? '#ef4444' : 'var(--text-muted)'} />
                       <div>
-                        <span style={{ fontWeight: 750, fontSize: '1.1rem', color: status === 'absent' ? '#991b1b' : 'var(--text-main)' }}>{studentName}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.75rem' }}>{studentEmail}</span>
+                        <span style={{ fontWeight: 750, fontSize: '1rem', color: status === 'absent' ? '#991b1b' : 'var(--text-main)' }}>{studentName}</span>
+                        {studentEmail && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem', wordBreak: 'break-all' }}>{studentEmail}</span>}
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem' }}>

@@ -1,15 +1,15 @@
 import React, { useState, useContext } from 'react';
-import { Bell, Settings, Video, CheckCircle, FileText } from 'lucide-react';
+import { Bell, Settings, Video, CheckCircle, FileText, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppContext } from '../../context/AppContext';
 
-const TopNav = ({ activeSection, setActiveSection, onLogout, profileData }) => {
+const TopNav = ({ activeSection, setActiveSection, onLogout, profileData, onToggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [notifications, setNotifications] = useState(() => profileData?.notifications || []);
 
   const topLink = (section, label) => (
-    <span onClick={() => setActiveSection(section)} style={{ color: activeSection === section ? '#0284c7' : 'var(--text-muted)', borderBottom: activeSection === section ? '2px solid #0284c7' : '2px solid transparent', paddingBottom: '1rem', marginBottom: '-1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+    <span onClick={() => setActiveSection(section)} style={{ color: activeSection === section ? '#0284c7' : 'var(--text-muted)', borderBottom: activeSection === section ? '2px solid #0284c7' : '2px solid transparent', paddingBottom: '0.5rem', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap', fontSize: '0.9rem' }}>
       {label}
     </span>
   );
@@ -19,13 +19,18 @@ const TopNav = ({ activeSection, setActiveSection, onLogout, profileData }) => {
   const initial = fullName.charAt(0).toUpperCase();
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2.5rem', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 9999 }}>
-      <div style={{ display: 'flex', gap: '2rem', fontWeight: 600, fontSize: '0.95rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem clamp(1rem, 3vw, 2.5rem)', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 9999, gap: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1.25rem', fontWeight: 600, fontSize: '0.95rem', alignItems: 'center', overflowX: 'auto' }}>
+        {onToggleSidebar && (
+          <button className="mobile-menu-btn" onClick={onToggleSidebar} aria-label="Open sidebar" style={{ display: 'flex' }}>
+            <Menu size={20} />
+          </button>
+        )}
         {topLink('overview', 'Portal')}
         {topLink('my-classes', 'My Classes')}
         {topLink('communications', 'Communications')}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', position: 'relative', marginLeft: 'auto' }}>
         
         {/* Notifications dropdown */}
         <div style={{ position: 'relative' }}>

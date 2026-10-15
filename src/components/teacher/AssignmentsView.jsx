@@ -150,13 +150,13 @@ const AssignmentsView = ({ profileData }) => {
   const removeFile = (index) => setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="responsive-grid-split">
       <PopCard style={{ height: 'fit-content' }}>
         <h2 style={{ marginBottom: '1.5rem' }}>{newAssignment.id ? 'Edit Assignment' : 'Post Assignment'}</h2>
         <form onSubmit={handleSaveAssignment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <input type="text" placeholder="Title" value={newAssignment.title} onChange={e => setNewAssignment({...newAssignment, title: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} required />
           <textarea placeholder="Description" value={newAssignment.description} onChange={e => setNewAssignment({...newAssignment, description: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} rows="3" required />
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <select 
               value={newAssignment.classId} 
               onChange={e => {

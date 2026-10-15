@@ -20,6 +20,7 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [showTerminateConfirm, setShowTerminateConfirm] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
+  const [showMembersMobile, setShowMembersMobile] = useState(false);
   const chatBottomRef = useRef(null);
 
   const activeRoomId = subject || 'General';
@@ -189,9 +190,10 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
       <div style={{ maxWidth: '100%', minHeight: 0, maxHeight: '100%', borderRadius: 0, border: 'none', boxShadow: 'none', display: 'flex', flexDirection: 'row', flex: 1, background: '#f8fafc', overflow: 'hidden' }}>
         
         {/* Fixed Sidebar */}
-        <aside className="chat-sidebar" style={{ background: 'white', borderRight: '1px solid var(--border)', width: 'clamp(260px, 20%, 350px)' }}>
-          <div className="sidebar-header" style={{ borderBottom: '1px solid var(--border)', padding: '1.5rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 800, margin: 0 }}><Users size={18} color="#0284c7" /> Class Members</h3>
+        <aside className={`chat-sidebar ${showMembersMobile ? 'mobile-show' : 'mobile-hide'}`} style={{ background: 'white', borderRight: '1px solid var(--border)', width: 'clamp(260px, 20%, 350px)' }}>
+          <div className="sidebar-header" style={{ borderBottom: '1px solid var(--border)', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 800, margin: 0, fontSize: '1rem' }}><Users size={18} color="#0284c7" /> Class Members</h3>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', background: '#e0f2fe', padding: '0.2rem 0.5rem', borderRadius: '10px' }}>{Object.keys(activeMembers).length}</span>
           </div>
           <ul className="participant-list" style={{ padding: '1rem', listStyle: 'none', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <AnimatePresence>
@@ -231,23 +233,35 @@ const GroupChat = ({ subject, userName, userRole, onBack, isEmbedded }) => {
         {/* Main Chat Area */}
         <section className="chat-area" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, maxHeight: '100%', background: 'white' }}>
           
-          <div style={{ padding: '1.25rem 2rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', zIndex: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.02)', flexShrink: 0 }}>
-            <div className="chat-header-left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ padding: '1rem clamp(1rem, 3vw, 2rem)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', zIndex: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.02)', flexShrink: 0, gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="chat-header-left" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <motion.button onClick={onBack} whileHover={{ scale: 1.05, backgroundColor: "var(--border)" }} whileTap={{ scale: 0.95 }} style={{ background: '#f1f5f9', border: 'none', borderRadius: '8px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                 <ArrowLeft size={20} color="#475569" />
               </motion.button>
               <div>
-                 <h2 style={{ fontWeight: 800, fontSize: '1.15rem', margin: 0 }}>{activeRoomId}</h2>
+                 <h2 style={{ fontWeight: 800, fontSize: 'clamp(1rem, 2.5vw, 1.15rem)', margin: 0 }}>{activeRoomId}</h2>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#10b981', fontWeight: 600, marginTop: '0.2rem' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 5px rgba(16,185,129,0.5)' }} /> Global Feed
                  </div>
               </div>
             </div>
-            {isHostActive && (
-              <motion.button onClick={() => setShowTerminateConfirm(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '10px', display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.85rem', padding: '0.6rem 1.2rem', fontWeight: 700, cursor: 'pointer' }}>
-                <XCircle size={16} /> Terminate Session
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <motion.button 
+                onClick={() => setShowMembersMobile(!showMembersMobile)} 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }} 
+                style={{ background: showMembersMobile ? '#e0f2fe' : '#f1f5f9', color: showMembersMobile ? '#0284c7' : '#475569', border: 'none', borderRadius: '8px', padding: '0.45rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 600 }}
+              >
+                <Users size={16} /> 
+                <span>{Object.keys(activeMembers).length}</span>
               </motion.button>
-            )}
+              {isHostActive && (
+                <motion.button onClick={() => setShowTerminateConfirm(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '10px', display: 'flex', gap: '0.4rem', alignItems: 'center', fontSize: '0.8rem', padding: '0.5rem 0.9rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  <XCircle size={16} /> End
+                </motion.button>
+              )}
+            </div>
           </div>
           
           <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', padding: '2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', background: '#f8fafc' }}>

@@ -84,13 +84,31 @@ const StudentDashboard = ({ onOpenRoom, onLogout, onForceLogout }) => {
     }
   };
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg-main)' }}>
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} onLogout={onLogout} profileData={profileData} />
+    <div className="dashboard-layout" style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg-main)', position: 'relative' }}>
+      <div 
+        className={`sidebar-backdrop ${isSidebarOpen ? 'active' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)} 
+      />
+      <Sidebar 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection} 
+        onLogout={onLogout} 
+        profileData={profileData} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
       
       <main className="dashboard-main" style={{ flex: 1, padding: '0', background: 'var(--bg-main)', overflowY: 'auto' }}>
-        <TopNav activeSection={activeSection} setActiveSection={setActiveSection} profileData={profileData} />
-        <div style={{ padding: '2.5rem 2.5rem 6rem 2.5rem', maxWidth: '1400px', margin: '0 auto' }}>
+        <TopNav 
+          activeSection={activeSection} 
+          setActiveSection={setActiveSection} 
+          profileData={profileData} 
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+        <div style={{ padding: 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem) 6rem clamp(1rem, 3vw, 2.5rem)', maxWidth: '1400px', margin: '0 auto' }}>
           {renderSection()}
         </div>
       </main>

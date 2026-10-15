@@ -70,11 +70,11 @@ const ResourceRoom = () => {
 
         <form onSubmit={handleShare} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-               <div style={{ flex: 1, minWidth: '250px' }}>
+               <div style={{ flex: 1, minWidth: '240px' }}>
                     <label style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', display: 'block' }}>Resource Title</label>
                     <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Physics Midterm Cheatsheet" style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-main)', color: 'var(--text-main)', outline: 'none' }} required />
                </div>
-               <div style={{ width: '200px' }}>
+               <div style={{ flex: 1, minWidth: '180px' }}>
                    <label style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', display: 'block' }}>Target Class Group</label>
                    <select value={classGroup} onChange={e => setClassGroup(e.target.value)} style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-main)', color: 'var(--text-main)', outline: 'none' }}>
                         <option value="General">General Broadcast</option>
@@ -110,7 +110,7 @@ const ResourceRoom = () => {
         ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {resources.map((res) => (
-                    <motion.div key={res._id} variants={itemVariants} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '1.25rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                    <motion.div key={res._id} variants={itemVariants} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '1.25rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
                         <div>
                             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', background: '#e0f2fe', padding: '0.2rem 0.6rem', borderRadius: '12px', marginBottom: '0.5rem', display: 'inline-block' }}>{res.classGroup}</span>
                             <h4 style={{ fontSize: '1.1rem', marginBottom: '0.4rem', color: 'var(--text-main)' }}>{res.title}</h4>

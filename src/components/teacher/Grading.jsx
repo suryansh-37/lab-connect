@@ -100,10 +100,10 @@ const Grading = () => {
 
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-      <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '-1rem' }}>Classroom Gradebook</h1>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)', fontWeight: 800, margin: 0 }}>Classroom Gradebook</h1>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr 1fr', gap: '1.5rem' }}>
+      <div className="responsive-grid-grading">
         {/* Class Average Grade Card */}
         <PopCard style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           <BarChart2 size={120} color="var(--bg-main)" style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.5 }} />
@@ -247,7 +247,8 @@ const Grading = () => {
             </p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 <th style={{ padding: '1.25rem 1.5rem', fontWeight: 700 }}>Student Name</th>
@@ -314,7 +315,8 @@ const Grading = () => {
               })}
             </tbody>
           </table>
-        )}
+        </div>
+      )}
       </PopCard>
       
       <style>{`
